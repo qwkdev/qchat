@@ -6,6 +6,17 @@
 	<title>QChat</title>
 
 	<style>
+		:root {
+			--c: #30f;
+			--c2: #60f;
+			--grey: #555;
+			--grey-s: #5557;
+
+			--border: #333;
+			--border2: #555;
+			--border-width: .12vh;
+		}
+
 		body {
 			margin: 0;
 			background: #000;
@@ -32,13 +43,13 @@
 				color: #fff;
 
 				b {
-					background: linear-gradient(to bottom, #30f 20%, #50f);
+					background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
 					background-clip: text;
 					color: transparent;
 				}
 				#version {
 					font-size: 2vh;
-					color: #555;
+					color: var(--grey);
 				}
 			}
 			#channel {
@@ -50,7 +61,7 @@
 
 				font-family: monospace;
 				font-size: 2.5vh;
-				color: #555;
+				color: var(--grey);
 			}
 		}
 		#bottom {
@@ -71,10 +82,10 @@
 				height: 2vh;
 				font-family: monospace;
 				font-size: 1.5vh;
-				color: #555;
+				color: var(--grey);
 
 				&::selection {
-					background: #5557;
+					background: var(--grey)7;
 				}
 			}
 		}
@@ -116,7 +127,8 @@
 			overflow-x: hidden;
 			overflow-y: scroll;
 
-			display: grid;
+			display: flex;
+			flex-direction: column;
 			gap: 1.25vh;
 
 			scrollbar-width: none;
@@ -126,33 +138,75 @@
 		}
 		.chat {
 			width: 100%;
-			height: 20vh;
+			height: min-content;
 
 			box-sizing: border-box;
 			background: #141415;
-			border: .12vh solid #333335;
+			border: var(--border-width) solid var(--border);
 			border-radius: 1vh;
+
+			padding: 0 .7vh .5vh .7vh;
+
+			div {
+				display: flex;
+				align-items: center;
+
+				margin: .7vh 0;
+				gap: .7vh;
+			}
 
 			h1 {
 				font-family: monospace;
 				margin: 0;
-				color: #fff;
+
+				font-size: 1.8vh;
+				font-weight: 700;
 			}
 			h2 {
 				font-family: monospace;
-				color: #555;
+				margin: 0;
+				color: var(--grey);
+
+				font-size: 1.2vh;
+
+				&::selection {
+					background: var(--grey-s);
+				}
 			}
 			p {
+				margin: 0;
 				font-family: Arial;
-				color: #fff;
+
+				font-size: 1.5vh;
+				line-height: 2vh;
 			}
 
+			h1, p, span {
+				color: #fff;
 
-			h1.lvl3 {
-				background: linear-gradient(to bottom, #30f 20%, #50f);
+				&::selection {
+					background: #fff5;
+				}
+			}
+			.mention {
+				padding: var(--border-width);
+				border: var(--border-width) solid var(--border);
+				border-radius: .5vh;
+			}
+
+			h1.lvl3, span.lvl3 {
+				background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
 				background-clip: text;
 				color: transparent;
 			}
+			h1.lvl2, span.lvl2 {
+				background: linear-gradient(to bottom, #03a 20%, #0aa);
+				background-clip: text;
+				color: transparent;
+			}
+		}
+		.pending {
+			border-color: var(--border2);
 		}
 
 		#msg-input {
@@ -172,22 +226,22 @@
 			color: #ccc;
 
 			background: #141415;
-			border: .12vh solid #333335;
+			border: var(--border-width) solid var(--border);
 
 			transition: .4s;
 
 			&:focus {
 				outline: none;
-				border: .12vh solid #30f;
+				border-color: var(--c);
 			}
 			&::selection {
-				background: #30f;
+				background: var(--c);
 				color: #fff;
 			}
 		}
 
 		.underlined {
-			color: #555;
+			color: var(--grey);
 			font-family: monospace;
 			font-weight: 500;
 			position: relative;
@@ -201,7 +255,7 @@
 			width: calc(100% + var(--widen));
 			transform: translateX(calc(-100% + var(--fix)));
 			height: 1px;
-			background: #555;
+			background: var(--grey);
 			position: absolute;
 			bottom: 0;
 			transition: .2s;
@@ -214,7 +268,7 @@
 			height: 100%;
 		}
 		.underlined::selection {
-			background: #ffffff55;
+			background: #fff5;
 		}
 
 		@media only screen and (min-width: 100vh) {
@@ -241,29 +295,32 @@
 	<div id="chat-wrapper">
 		<div id="chats">
 			<div class="chat">
-				<h1>qwk</h1>
-				<p>Hello World</p>
-				<h2>12:34</h2>
+				<div>
+					<h1 class="lvl3">[qwk]</h1>
+					<h2>12:34</h2>
+				</div>
+				<p>
+					Hello world <span class="mention lvl2">@test</span>
+				</p>
 			</div>
 			<div class="chat">
-				<h1 class="lvl3">[qwk]</h1>
-				<p>Hello World</p>
-				<h2>12:34</h2>
+				<div>
+					<h1>example</h1>
+					<h2>12:34</h2>
+				</div>
+				<p>
+					Hello world
+				</p>
 			</div>
 			<div class="chat">
-				<h1>qwk</h1>
-				<p>Hello World</p>
-				<h2>12:34</h2>
-			</div>
-			<div class="chat">
-				<h1>qwk</h1>
-				<p>Hello World</p>
-				<h2>12:34</h2>
-			</div>
-			<div class="chat">
-				<h1>qwk</h1>
-				<p>Hello World</p>
-				<h2>12:34</h2>
+				<div>
+					<h1 class="lvl2">^test</h1>
+					<h2>12:34</h2>
+				</div>
+				<p>
+					Hello world<br>
+					Newline
+				</p>
 			</div>
 		</div>
 	</div>

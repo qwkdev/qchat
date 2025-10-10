@@ -12,6 +12,8 @@ from flask_cors import CORS
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import emoji
+
 cwd = Path(__file__).parent.resolve()
 
 app = Flask('qChat', template_folder=cwd / 'templates', static_folder=cwd / 'static')
@@ -55,7 +57,15 @@ def isotime(epoch: int) -> str:
     return datetime.fromtimestamp(epoch, ZoneInfo('Europe/London')).isoformat()
 
 def safeText(text: str) -> str:
-    return re.sub(r'[^a-zA-Z0-9\s_-]', '', text)
+    return re.sub(r'[^a-zA-Z0-9_-]', '', text)
+
+def splitPrefix(text: str, prefix: str) -> str:
+    return [
+        u for n, i in enumerate(text.split(prefix))
+        for u in ([i] if n == 0 else [
+            prefix+j if m == 0 else j for m, j in enumerate(re.split(r'([^a-zA-Z0-9_-])', i, maxsplit=1))
+        ])
+    ]
 
 # User: qwk, @qwk, ^qwk, [qwk]
 def parseUser(user: str) -> tuple[int, str]:
@@ -71,9 +81,32 @@ def parseChannel(c: str) -> tuple[int, str]:
     elif c.startswith('&'): return 1, '&'+safeText(c[1:])
     return 2, safeText(c)
 
+def parseMessage(text: str) -> str:
+    txt = emoji.emojize(text, language='alias')
+
+    resp = []
+    for part in splitPrefix(txt, '@'):
+        if part.startswith('@'): 
+            if part[1:].lower() in users:
+                resp.append({
+                    'type': 'mention',
+                    'level': users[part[1:].lower()][1],
+                    'value': part
+                })
+            else:
+                resp.append(part)
+        else:
+            resp.append(part)
+
+    #! TODO: Join consecutive strings and add {'type': 'newline'} for \n
+    return resp
+
+
 users = {
     'qwk': ['password', 3]
 }
+print(parseMessage('hello @qwk world @x!exaple'))
+exit()
 channels = {
     'main': {
         'level': 2,
@@ -81,9 +114,9 @@ channels = {
         'write': 0,
         'filter': True,
         'chat': [
-            [0, 0, 0, '', '- Start of chat'],
-            [1, 1759715003, 0, '', 'hello world'],
-            [2, 1759715006, 0, '', 'bye world']
+            [0, 0, 0, '', ['- Start of chat']],
+            [1, 1759715003, 0, '', ['hello world']],
+            [2, 1759715006, 0, '', ['bye world']]
         ]
     },
     'x': {
@@ -92,9 +125,9 @@ channels = {
         'write': 2,
         'filter': True,
         'chat': [
-            [0, 0, 0, '', '- Start of chat'],
-            [1, 1759715003, 0, '', 'hello world'],
-            [2, 1759715006, 0, '', 'bye world']
+            [0, 0, 0, '', ['- Start of chat']],
+            [1, 1759715003, 0, '', ['hello world']],
+            [2, 1759715006, 0, '', ['bye world']]
         ]
     },
     'push': {
@@ -103,7 +136,7 @@ channels = {
         'write': 3,
         'filter': False,
         'chat': [
-            [0, 0, 0, '', '- Start of chat']
+            [0, 0, 0, '', ['- Start of chat']]
         ]
     }
 }
@@ -121,8 +154,8 @@ def make_channel(channel):
 
     level, user = parseUser(data.get('user', ''))
     if level > 0:
-        if user in users and data.get('auth') == users[user][0]:
-            level = users[user][1]
+        if user.lower() in users and data.get('auth') == users[user.lower()][0]:
+            level = users[user.lower()][1]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
 
@@ -146,7 +179,7 @@ def make_channel(channel):
         'write': write,
         'filter': msgfilter,
         'chat': [
-            [0, epoch(), 0, '', '- Start of channel'],
+            [0, epoch(), 0, '', ['- Start of channel']],
         ]
     }
     
@@ -159,8 +192,8 @@ def get_messages(channel):
 
     level, user = parseUser(data.get('user', ''))
     if level > 0:
-        if user in users and data.get('auth') == users[user][0]:
-            level = users[user][1]
+        if user.lower() in users and data.get('auth') == users[user.lower()][0]:
+            level = users[user.lower()][1]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
 
@@ -181,10 +214,12 @@ def send_message(channel):
 
     if not data.get('msg'): return {'success': False}
 
+    msg = parseMessage(data.get('msg', ''))
+
     level, user = parseUser(data.get('user', ''))
     if level > 0:
-        if user in users and data.get('auth') == users[user][0]:
-            level = users[user][1]
+        if user.lower() in users and data.get('auth') == users[user.lower()][0]:
+            level = users[user.lower()][1]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
 
@@ -193,7 +228,7 @@ def send_message(channel):
     if channels[c]['write'] > level:
         return {'success': False, 'error': 'Access Denied'}
     
-    channels[c]['chat'].append([channels[c]['chat'][-1][0]+1, epoch(), level, user, data.get('msg')])
+    channels[c]['chat'].append([channels[c]['chat'][-1][0]+1, epoch(), level, user, msg])
     channels[c]['chat'] = channels[c]['chat'][-MAX_CHATS:]
     
     return {'success': True}
