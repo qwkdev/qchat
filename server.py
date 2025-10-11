@@ -30,7 +30,6 @@ MAX_MESSAGE_LENGTH = 256
 def landing():
     return '<h1>hello world</h1>'
 
-
 def getip(request):
     try:
         if request.headers.getlist('X-Forwarded-For'):
@@ -41,16 +40,13 @@ def getip(request):
     except:
         return '???'
 
-
 @app.route('/ping')
 def ping():
     return {'success': True}
 
-
 @app.route('/ip')
 def jsonip():
     return {'success': True, 'ip': getip(request)}
-
 
 def epoch() -> int:
     return int(time.time())
@@ -68,15 +64,12 @@ def splitPrefix(text: str, prefix: str) -> str:
         ])
     ]
 
-# User: qwk, @qwk, ^qwk, [qwk]
-def parseUser(user: str) -> tuple[int, str]:
-    if user.startswith('@'): return 1, safeText(user[1:])
-    elif user.startswith('^'): return 2, safeText(user[1:])
-    elif user.startswith('[') and user.endswith(']'):
-        return 3, safeText(user[1:-1])
-    return 0, safeText(user)
+def parseUser(user: str) -> tuple[bool, str]:
+    if user.startswith('@'):
+        return True, safeText(user[1:])
+    return False, safeText(user)
 
-# Channel: ~main, &main, #main
+# Channel: ~main, ^main, #main
 def parseChannel(c: str) -> tuple[int, str]:
     if c.startswith('~'): return 0, '~'+safeText(c[1:])
     elif c.startswith('&'): return 1, '&'+safeText(c[1:])
@@ -115,7 +108,7 @@ def parseMessage(text: str) -> str:
     return [i for i in final if i]
 
 users = {
-    'qwk': ['password', 3]
+    'qwk': ['password', 4]
 }
 channels = {
     'main': {
@@ -124,15 +117,25 @@ channels = {
         'write': 0,
         'filter': True,
         'chat': [
-            [0, 0, 0, '', ['- Start of chat']],
-            [1, 1759715003, 0, '', ['hello world']],
-            [2, 1759715006, 0, '', ['bye world']]
+            [0, 0, 3, '', ['- Start of chat']],
+            [1, 1710100000, 4, 'qwk', ['hello world']],
+            [2, 1710200000, 1, 'qwk', ['bye world']],
+            [11, 1711100000, 3, 'qwk', ['hello world']],
+            [12, 1711200000, 1, 'qwk', ['bye world']],
+            [21, 1712100000, 2, 'qwk', ['hello world']],
+            [22, 1712200000, 1, 'qwk', ['bye world']],
+            [31, 1713100000, 4, 'qwk', ['hello world']],
+            [32, 1713200000, 1, 'qwk', ['bye world']],
+            [41, 1714100000, 3, 'qwk', ['hello world']],
+            [42, 1714200000, 1, 'qwk', ['bye world']],
+            [51, 1715100000, 2, 'qwk', ['hello world']],
+            [52, 1715200000, 1, 'qwk', ['bye world']],
         ]
     },
     'x': {
         'level': 0,
-        'read': 2,
-        'write': 2,
+        'read': 3,
+        'write': 3,
         'filter': True,
         'chat': [
             [0, 0, 0, '', ['- Start of chat']],
@@ -143,7 +146,7 @@ channels = {
     'push': {
         'level': 1,
         'read': 0,
-        'write': 3,
+        'write': 4,
         'filter': False,
         'chat': [
             [0, 0, 0, '', ['- Start of chat']]
@@ -151,11 +154,14 @@ channels = {
     }
 }
 
+def auth(auth: str, user: str) -> bool:
+    return auth == users[user.lower()][0]
+
 @app.route('/channels')
 def channel_debug():
     return channels
 
-@app.route('/create/<path:c>')
+@app.route('/create/<path:channel>', methods=['POST'])
 def make_channel(channel):
     global channels
 
@@ -163,13 +169,17 @@ def make_channel(channel):
     data = request.get_json()
 
     level, user = parseUser(data.get('user', ''))
-    if level > 0:
-        if user.lower() in users and data.get('auth') == users[user.lower()][0]:
+    if level:
+        if user.lower() in users and auth(data.get('auth'), user.lower()):
             level = users[user.lower()][1]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
+    elif user.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+    else:
+        level = 0
 
-    if level < 2:
+    if level < 3:
         return {'success': False, 'error': 'Access Denied'}
 
     if c in channels:
@@ -195,17 +205,21 @@ def make_channel(channel):
     
     return {'success': True}
 
-@app.route('/get/<path:c>')
+@app.route('/get/<path:channel>', methods=['POST'])
 def get_messages(channel):
     _, c = parseChannel(channel)
     data = request.get_json()
 
     level, user = parseUser(data.get('user', ''))
-    if level > 0:
-        if user.lower() in users and data.get('auth') == users[user.lower()][0]:
+    if level:
+        if user.lower() in users and auth(data.get('auth'), user.lower()):
             level = users[user.lower()][1]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
+    elif user.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+    else:
+        level = 0
 
     if c not in channels:
         return {'success': False, 'error': 'Invalid Channel'}
@@ -217,7 +231,7 @@ def get_messages(channel):
 
     return {'success': True, 'chat': channels[c]['chat']}
 
-@app.route('/msg/<path:c>')
+@app.route('/msg/<path:channel>', methods=['POST'])
 def send_message(channel):
     _, c = parseChannel(channel)
     data = request.get_json()
@@ -227,11 +241,15 @@ def send_message(channel):
     msg = parseMessage(data.get('msg', '')[:MAX_MESSAGE_LENGTH])
 
     level, user = parseUser(data.get('user', ''))
-    if level > 0:
-        if user.lower() in users and data.get('auth') == users[user.lower()][0]:
+    if level:
+        if user.lower() in users and auth(data.get('auth'), user.lower()):
             level = users[user.lower()][1]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
+    elif user.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+    else:
+        level = 0
 
     if c not in channels:
         return {'success': False, 'error': 'Invalid Channel'}

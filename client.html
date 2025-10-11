@@ -12,9 +12,13 @@
 			--grey: #555;
 			--grey-s: #5557;
 
+			--fg: #141415;
 			--border: #333;
 			--border2: #555;
 			--border-width: .12vh;
+			--br: 1vh; /* TODO */
+
+			--chat-margin: 1vh;
 		}
 
 		body {
@@ -24,19 +28,44 @@
 			overflow: hidden;
 		}
 		#top {
-			--margin: 2vh;
 			position: absolute;
-			top: 1vh;
+			top: 0;
+			left: 0;
 
-			width: calc(100vw - var(--margin) * 2);
-			margin: 0 var(--margin);
+			height: 5vh;
 
+			display: flex;
+			align-items: center;
+
+			width: calc(100vw - var(--chat-margin) - 2vh);
+			margin: 0 2vh 0 var(--chat-margin);
+			gap: var(--chat-margin);
+
+			button {
+				position: relative;
+				background: transparent;
+				border: none;
+
+				width: 2.5vh;
+				height: 2.5vh;
+
+				&:focus {
+					outline: none;
+				}
+
+				svg {
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 2.5vh;
+					height: 2.5vh;
+					
+					stroke: #fff;
+				}
+			}
 			#logo {
 				user-select: none;
 				margin: 0;
-				position: absolute;
-				top: 0;
-				left: 0;
 
 				font-family: monospace;
 				font-size: 2.5vh;
@@ -55,22 +84,20 @@
 			#channel {
 				user-select: none;
 				margin: 0;
-				position: absolute;
-				top: 0;
-				right: 0;
+
+				margin-left: auto;
 
 				font-family: monospace;
 				font-size: 2.5vh;
 				color: var(--grey);
 			}
 		}
-		#bottom {
-			--margin: 1.2vh;
+		#info {
 			position: absolute;
 			bottom: 1vh;
 
-			width: calc(100vw - var(--margin) * 2);
-			margin: 0 var(--margin);
+			width: calc(100vw - 1.2vh * 2);
+			margin: 0 1.2vh;
 
 			display: flex;
 			justify-content: space-between;
@@ -90,38 +117,68 @@
 			}
 		}
 
-		#chat-wrapper {
-			width: 95vw;
-			height: 84.5vh;
-
+		#menu-wrapper {
 			position: absolute;
-			top: 4.5vh;
+			top: 0;
+			left: -100%;
+
+			width: 100vw;
+			height: 100vh;
+
+			z-index: 50;
+
+			display: grid;
+			grid-template-columns: auto 5vh;
+
+			transition: .5s;
+
+			#menu {
+				width: 100%;
+				height: 100%;
+
+				background: #000;
+				box-shadow: 0 0 5vh 0 #000;
+			}
+			#close-menu {
+				position: relative;
+
+				width: 5vh;
+				height: 5vh;
+
+				background: #000;
+				border: none;
+
+				&:focus {
+					outline: none;
+				}
+
+				svg {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+
+					width: 2.5vh;
+					height: 2.5vh;
+					
+					stroke: #fff;
+				}
+			}
+		}
+		#menu-wrapper[data-active="1"] {
+			left: 0;
+		}
+
+		#chats {
+			position: absolute;
+			top: 5.5vh;
 			left: 50%;
 			transform: translateX(-50%);
-		}
-		#chat-wrapper::before, #chat-wrapper::after {
-			content: '';
-			position: absolute;
-			left: 0;
-			width: 100%;
-			height: 1.5vh;
-			z-index: 10;
-		}
-		#chat-wrapper::before {
-			top: 0;
-			background: linear-gradient(to bottom, #000f, #0000);
-		}
-		#chat-wrapper::after {
-			bottom: 0;
-			background: linear-gradient(to top, #000f, #0000);
-		}
-		#chats {
-			position: relative;
 
-			width: 100%;
-			height: 100%;
+			width: calc(100vw - var(--chat-margin) * 2);
+			height: 83.5vh;
 
-			padding: 1.25vh 0;
+			padding-bottom: 1.25vh;
 			box-sizing: border-box;
 
 			overflow-x: hidden;
@@ -135,15 +192,18 @@
 			&::-webkit-scrollbar {
 				display: none;
 			}
+			&:focus {
+				outline: var(--border-width) solid var(--c);
+			}
 		}
 		.chat {
 			width: 100%;
 			height: min-content;
 
 			box-sizing: border-box;
-			background: #141415;
+			background: var(--fg);
 			border: var(--border-width) solid var(--border);
-			border-radius: 1vh;
+			border-radius: var(--br);
 
 			padding: 0 .7vh .5vh .7vh;
 
@@ -151,7 +211,8 @@
 				display: flex;
 				align-items: center;
 
-				margin: .7vh 0;
+				margin: 0;
+				margin-top: .7vh;
 				gap: .7vh;
 			}
 
@@ -175,6 +236,7 @@
 			}
 			p {
 				margin: 0;
+				margin-top: .7vh;
 				font-family: Arial;
 
 				font-size: 1.5vh;
@@ -194,13 +256,18 @@
 				border-radius: .5vh;
 			}
 
-			h1.lvl3, span.lvl3 {
+			h1.lvl4, span.lvl4 {
 				background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
 				background-clip: text;
 				color: transparent;
 			}
-			h1.lvl2, span.lvl2 {
+			h1.lvl3, span.lvl3 {
 				background: linear-gradient(to bottom, #03a 20%, #0aa);
+				background-clip: text;
+				color: transparent;
+			}
+			h1.lvl2, span.lvl2 {
+				background: linear-gradient(to bottom, #c80 20%, #cc0);
 				background-clip: text;
 				color: transparent;
 			}
@@ -209,23 +276,78 @@
 			border-color: var(--border2);
 		}
 
-		#msg-input {
+		#error {
+			position: absolute;
+			top: 5vh;
+			left: 50%;
+			transform: translateX(-50%);
+
+			width: calc(100% - var(--chat-margin) * 2);
+			height: calc(100% - 16vh);
+			
+			box-sizing: border-box;
+
+			background: var(--fg);
+			border: var(--border-width) solid var(--border);
+			border-radius: var(--br);
+
+			z-index: 20;
+
+			p {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+
+				width: 80%;
+				text-align: center;
+
+				margin: 0;
+				font-size: 4vh;
+				color: #fff;
+				font-family: monospace;
+			}
+		}
+		#chat-wrapper:has(#error:not([hidden]))::before,
+		#chat-wrapper:has(#error:not([hidden]))::after {
+			height: 2vh;
+			background: #000;
+		}
+
+		#bottom {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+
+			width: 100vw;
+			height: 11vh;
+
+			background: #000;
+		}
+
+		#top, #bottom {
+			z-index: 10;
+			box-shadow: 0 0 1vh .5vh #000;
+		}
+
+		#msg-input { 
 			position: absolute;
 			bottom: 4vh;
 			left: 50%;
 			transform: translateX(-50%);
 
-			width: 95vw;
+			width: calc(100vw - var(--chat-margin) * 2);
 			height: 7vh;
+			resize: none;
 			border-radius: 2vh;
 
 			font-size: 2vh;
-			padding: 0 2vh;
+			padding: 2.2vh 2vh;
 			box-sizing: border-box;
 
 			color: #ccc;
 
-			background: #141415;
+			background: var(--fg);
 			border: var(--border-width) solid var(--border);
 
 			transition: .4s;
@@ -271,6 +393,10 @@
 			background: #fff5;
 		}
 
+		.template {
+			display: none;
+		}
+
 		@media only screen and (min-width: 100vh) {
 			#search {
 				width: 80vw;
@@ -283,52 +409,264 @@
 </head>
 <body>
 	<div id="top">
+		<button onclick="burger(1)">
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+		</button>
 		<p id="logo"><b>Q</b>Chat <span id="version">v0.0</span></p>
 		<p id="channel">#main</p>
 	</div>
 	
-	<div id="bottom">
-		<p>chat.qwk.zone</p>
-		<p>Made by <span><a class="underlined" href="https://qwkdev.github.io/" target="_blank" aria-label="label">qwk<span class="underline" style="--widen: 5%; --fix: 1%;"></span></a></span></p>
+	<div id="menu-wrapper" data-active="0">
+		<div id="menu">
+			<p>hi</p>
+		</div>
+		<button id="close-menu" onclick="burger(0)">
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M15 6L9 12L15 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+		</button>
 	</div>
 	
-	<div id="chat-wrapper">
-		<div id="chats">
-			<div class="chat">
-				<div>
-					<h1 class="lvl3">[qwk]</h1>
-					<h2>12:34</h2>
-				</div>
-				<p>
-					Hello world <span class="mention lvl2">@test</span>
-				</p>
+	<div id="chats">
+		<div class="chat template">
+			<div>
+				<h1></h1>
+				<h2></h2>
 			</div>
-			<div class="chat">
-				<div>
-					<h1>example</h1>
-					<h2>12:34</h2>
-				</div>
-				<p>
-					Hello world
-				</p>
-			</div>
-			<div class="chat">
-				<div>
-					<h1 class="lvl2">^test</h1>
-					<h2>12:34</h2>
-				</div>
-				<p>
-					Hello world<br>
-					Newline
-				</p>
-			</div>
+			<p></p>
 		</div>
 	</div>
 
-	<input type="text" id="msg-input" placeholder="Message #main">
+	<div id="error" hidden>
+		<p></p>
+	</div>
+
+	<div id="bottom">
+		<textarea id="msg-input" placeholder="Message #main"></textarea>
+
+		<div id="info">
+			<p>chat.qwk.zone</p>
+			<p>Made by <span><a class="underlined" href="https://qwkdev.github.io/" target="_blank" aria-label="label">qwk<span class="underline" style="--widen: 5%; --fix: 1%;"></span></a></span></p>
+		</div>
+	</div>
 
 	<script>
+		const CHANNEL = 'main';
+		const SERVER = 'http://127.0.0.1:5000';
 
+		function parseChannel(channel) {
+			if (
+				!channel.startsWith('~') &&
+				!channel.startsWith('^')
+			) {
+				return `#${channel}`;
+			} else return channel;
+		}
+
+		const channelName = parseChannel(CHANNEL);
+		// TODO
+
+		const errorWall = document.getElementById('error');
+
+		const chat = document.getElementById('chats');
+		const chatTemplate = document.querySelector('.chat.template');
+
+		function parseEpoch(epoch) {
+			if (epoch === 0) return '';
+
+			const date = new Date( epoch*1000 );
+			const now = new Date();
+			const isToday =
+				date.getDate() === now.getDate() &&
+				date.getMonth() === now.getMonth() &&
+				date.getFullYear() === now.getFullYear();
+
+			const hours = String(date.getHours()).padStart(2, '0');
+			const minutes = String(date.getMinutes()).padStart(2, '0');
+
+			if (isToday) {
+				return `${hours}:${minutes}`;
+			} else {
+				const day = String(date.getDate()).padStart(2, '0');
+				const month = String(date.getMonth() + 1).padStart(2, '0');
+				return `${hours}:${minutes} ${day}/${month}`;
+			}
+		}
+
+		function parseUser(user, level) {
+			if (level === 0) return user;
+			// else if (level === 4) return `[${user}]`;
+			else return `@${user}`;
+
+			// switch (level) {
+			// 	case 0: return user;
+			// 	case 1: return `@${user}`;
+			// 	case 2: return `;${user}`;
+			// 	case 3: return `^${user}`;
+			// 	case 4: return `[${user}]`;
+			// 	default: return user;
+			// }
+		}
+
+		function checkExists(msgId) {
+			for (const e of chat.querySelectorAll('.chat:not(.template)')) {
+				if (msgId === parseInt(e.dataset.id)) return true;
+			}
+			return false;
+		}
+		function getLatest() {
+			return Array.from(chat.querySelectorAll('.chat:not(.template)'))
+				.map(e => parseInt(e.dataset.id)).at(-1) || -1;
+		}
+
+		const bottomError = 10; // px
+		function addChat(msgId, epoch, level, user, parts, init=false, pending=false) {
+			if (!pending && checkExists(msgId)) return;
+
+			const atBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < bottomError;
+
+			const newChat = chatTemplate.cloneNode(true);
+			newChat.classList.remove('template');
+
+			if (!user) {
+				newChat.querySelector('div').remove();
+			} else {
+				newChat.querySelector('h1').innerText = parseUser(user, level);
+				newChat.querySelector('h1').classList = `lvl${level}`;
+				newChat.querySelector('h2').innerText = parseEpoch(epoch);
+			}
+
+			const text = newChat.querySelector('p');
+			parts.forEach(part => {
+				if (typeof part === 'string') {
+					text.append(document.createTextNode(part));
+				} else {
+					if (part.type === 'newline') {
+						text.append(document.createElement('br'));
+					} else if (part.type === 'mention') {
+						const newMention = document.createElement('span');
+						newMention.classList = `mention lvl${part.level}`;
+						newMention.innerText = part.value;
+						text.append(newMention);
+					}
+				}
+			});
+
+			newChat.dataset.id = msgId;
+
+			if (pending) {
+				newChat.classList.add('pending');
+			}
+			if (init) {
+				chat.appendChild(newChat);
+			} else {
+				for (const e of Array.from(chat.querySelectorAll('.chat')).reverse()) {
+					const eId = parseInt(e.dataset.id);
+					if (!eId || msgId > eId) {
+						chat.insertBefore(newChat, e.nextSibling);
+						break;
+					}
+				}
+
+				if (atBottom) {
+					chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+				}
+			}
+		}
+
+		function addPending(message, level, user) {
+			const parts = message.split('\n').flatMap((e, i, a) => i < a.length - 1 ? [e, {'type': 'newline'}] : [e]);
+			addChat(0, new Date().getTime() / 1000, level, user, parts, true, true);
+			chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+		}
+		function removePending() {
+			Array.from(chat.querySelectorAll('.chat.pending')).forEach(e => e.remove());
+		}
+
+		function showError(type=null, text=null) {
+			if (text === null) {
+				errorWall.hidden = true;
+			} else {
+				errorWall.querySelector('p').innerHTML = '';
+				errorWall.querySelector('p').append(
+					document.createTextNode(type),
+					document.createElement('br'),
+					document.createTextNode(text)
+				);
+				errorWall.hidden = false;
+			}
+		}
+
+		const menuWrapper = document.getElementById('menu-wrapper');
+		function burger(value) {
+			menuWrapper.dataset.active = value;
+		}
+
+		const msgInput = document.getElementById('msg-input');
+		msgInput.addEventListener('keydown', e => {
+			if (e.key === 'Enter') {
+				if (e.shiftKey) return;
+				else {
+					e.preventDefault();
+					addPending(msgInput.value, 4, 'qwk');
+					send(msgInput.value);
+					msgInput.value = '';
+				}
+			}
+		});
+	
+		chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+
+		async function sync() {
+			const user = '@qwk';
+			const auth = 'password';
+
+			const latest = getLatest();
+			await fetch(`${SERVER}/get/${CHANNEL}?after=${latest}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					user,
+					auth
+				})
+			})
+				.then(resp => resp.json())
+				.then(data => {
+					if (data.success === true) {
+						showError();
+						data.chat.forEach(c => addChat(...c));
+						removePending();
+						chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+					} else showError('Client Error:', data.error);
+				})
+				.catch(e => showError('Network Error:', e));
+		}
+
+		async function send(msg) {
+			const user = '@qwk';
+			const auth = 'password';
+			await fetch(`${SERVER}/msg/${CHANNEL}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					msg,
+					user,
+					auth
+				})
+			})
+				.then(resp => resp.json())
+				.then(data => {
+					if (data.success !== true) {
+						showError('Client Error:', data.error);
+					}
+				})
+				.catch(e => showError('Network Error:', e));
+		}
+
+		sync();
+		setInterval(() => sync(), 5000);
 	</script>
 </body>
 </html>
