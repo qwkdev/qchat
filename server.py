@@ -21,6 +21,7 @@ CORS(app)
 app.secret_key = 'example'  # os.getenv('app')
 
 MAX_CHATS = 100
+MAX_MESSAGE_LENGTH = 256
 
 #####
 
@@ -98,15 +99,24 @@ def parseMessage(text: str) -> str:
         else:
             resp.append(part)
 
-    #! TODO: Join consecutive strings and add {'type': 'newline'} for \n
-    return resp
+    final = []
+    for part in resp:
+        if isinstance(part, str):
+            for temp in re.split(r'(\n)', part):
+                if temp == '\n':
+                    final.append({'type': 'newline'})
+                elif final and isinstance(final[-1], str):
+                    final[-1] += temp
+                else:
+                    final.append(temp)
+        else:
+            final.append(part)
 
+    return [i for i in final if i]
 
 users = {
     'qwk': ['password', 3]
 }
-print(parseMessage('hello @qwk world @x!exaple'))
-exit()
 channels = {
     'main': {
         'level': 2,
@@ -214,7 +224,7 @@ def send_message(channel):
 
     if not data.get('msg'): return {'success': False}
 
-    msg = parseMessage(data.get('msg', ''))
+    msg = parseMessage(data.get('msg', '')[:MAX_MESSAGE_LENGTH])
 
     level, user = parseUser(data.get('user', ''))
     if level > 0:
