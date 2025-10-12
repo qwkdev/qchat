@@ -13,10 +13,12 @@
 			--grey-s: #5557;
 
 			--fg: #141415;
+			--fg2: #1f1f20;
+			--fg3: #252526;
 			--border: #333;
 			--border2: #555;
 			--border-width: .12vh;
-			--br: 1vh; /* TODO */
+			--br: 1vh;
 
 			--chat-margin: 1vh;
 		}
@@ -113,7 +115,7 @@
 				color: var(--grey);
 
 				&::selection {
-					background: var(--grey)7;
+					background: var(--grey-s);
 				}
 			}
 		}
@@ -149,6 +151,79 @@
 					margin: 5vh 0;
 					text-align: center;
 				}
+				div {
+					width: 100%;
+					height: max-content;
+
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+
+					gap: 1vh;
+				}
+				div[hidden] {
+					display: none;
+				}
+				input[type="text"], input[type="password"], button {
+					width: 50%;
+					height: 5vh;
+					box-sizing: border-box;
+
+					font-family: monospace;
+					font-size: 2vh;
+				}
+				input[type="text"], input[type="password"] {
+					background: var(--fg);
+					border: var(--border-width) solid var(--border);
+					border-radius: var(--br);
+
+					font-family: monospace;
+					font-size: 2vh;
+					padding-left: 1.25vh;
+					color: #fff;
+
+					&:focus {
+						outline: none;
+						border-color: var(--c);
+					}
+					&::selection {
+						background: var(--c);
+					}
+				}
+				button {
+					background: var(--fg2);
+					border: var(--border-width) solid var(--border2);
+					border-radius: var(--br);
+					
+					color: #fff;
+
+					&:hover {
+						background: var(--fg3);
+					}
+				}
+				h1, h2, p:not(.logo) {
+					width: 50%;
+					box-sizing: border-box;
+
+					font-family: monospace;
+					font-size: 2vh;
+
+					margin: 0;
+					text-align: center;
+
+					color: #fff;
+
+					&::selection {
+						background: #fff5;
+					}
+				}
+				p:not(.logo) {
+					font-size: 1.5vh;
+				}
+
+				#logout-section h2 {
+					margin: 1vh 0 1.25vh 0;
+				}
 			}
 			#close-menu {
 				position: relative;
@@ -178,6 +253,22 @@
 		}
 		#menu-wrapper[data-active="1"] {
 			left: 0;
+		}
+
+		.lvl4 {
+			background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
+			background-clip: text;
+			color: transparent !important;
+		}
+		.lvl3 {
+			background: linear-gradient(to bottom, #03c 20%, #0cc);
+			background-clip: text;
+			color: transparent !important;
+		}
+		.lvl2 {
+			background: linear-gradient(to bottom, #c80 20%, #dc0);
+			background-clip: text;
+			color: transparent !important;
 		}
 
 		#chats {
@@ -240,6 +331,7 @@
 				color: var(--grey);
 
 				font-size: 1.2vh;
+				font-weight: 700;
 
 				&::selection {
 					background: var(--grey-s);
@@ -251,6 +343,7 @@
 				font-family: Arial;
 
 				font-size: 1.5vh;
+				font-weight: 500;
 				line-height: 2vh;
 			}
 
@@ -264,23 +357,7 @@
 			.mention {
 				padding: var(--border-width);
 				border: var(--border-width) solid var(--border);
-				border-radius: .5vh;
-			}
-
-			h1.lvl4, span.lvl4 {
-				background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
-				background-clip: text;
-				color: transparent;
-			}
-			h1.lvl3, span.lvl3 {
-				background: linear-gradient(to bottom, #03c 20%, #0cc);
-				background-clip: text;
-				color: transparent;
-			}
-			h1.lvl2, span.lvl2 {
-				background: linear-gradient(to bottom, #c80 20%, #dc0);
-				background-clip: text;
-				color: transparent;
+				border-radius: calc(var(--br) / 2);
 			}
 		}
 		.pending {
@@ -350,7 +427,7 @@
 			width: calc(100vw - var(--chat-margin) * 2);
 			height: 7vh;
 			resize: none;
-			border-radius: 2vh;
+			border-radius: calc(var(--br) * 2);
 
 			font-size: 2vh;
 			padding: 2.2vh 2vh;
@@ -427,9 +504,24 @@
 		<p id="channel"></p>
 	</div>
 	
-	<div id="menu-wrapper" data-active="0">
+	<div id="menu-wrapper" data-active="1">
 		<div id="menu">
 			<p class="logo"><b>Q</b>Chat</p>
+
+			<div id="display-section" hidden>
+				<p>Enter display name:</p>
+				<input type="text" placeholder="Name">
+			</div>
+			<div id="login-section" hidden>
+				<input type="text" placeholder="Username">
+				<input type="password" placeholder="Password">
+				<button>Login</button>
+			</div>
+			<div id="logout-section">
+				<p>Signed in as:</p>
+				<h2 class="lvl3">@qwk</h2>
+				<button>Logout</button>
+			</div>
 		</div>
 		<button id="close-menu" onclick="burger(0)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M15 6L9 12L15 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
@@ -460,7 +552,7 @@
 	</div>
 
 	<script>
-		const CHANNEL = 'x';
+		const CHANNEL = 'main';
 		const SERVER = 'http://127.0.0.1:5000';
 
 		function parseChannel(channel) {
@@ -629,7 +721,7 @@
 		chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
 
 		async function sync() {
-			const user = '@qwk';
+			const user = 'xqwk';
 			const auth = 'password';
 
 			const latest = getLatest();
@@ -657,7 +749,7 @@
 
 		//! TODO: Use new session/token architecture
 		async function send(msg) {
-			const user = '@qwk';
+			const user = 'xqwk';
 			const auth = 'password';
 			await fetch(`${SERVER}/msg/${CHANNEL}`, {
 				method: 'POST',
@@ -679,8 +771,9 @@
 				.catch(e => showError('Network Error:', e));
 		}
 
-		sync();
-		setInterval(() => sync(), 5000);
+		// sync();
+		// setInterval(() => sync(), 5000);
+		setInterval(() => showError('Example:', 'Error'), 1000);
 	</script>
 </body>
 </html>

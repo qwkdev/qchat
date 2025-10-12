@@ -121,7 +121,7 @@ def parseMessage(text: str) -> str:
     return [i for i in final if i]
 
 users = {
-    'qwk': ['password', 4]
+    'qwk': ['password', 'token', 4]
 }
 channels = {
     'main': {
@@ -196,6 +196,22 @@ def new_session():
         level = 0
 
     return {'success': True, 'level': level, 'auth': token_gen(user.lower()) if level else ''}
+
+@app.route('/logout', methods=['POST'])
+def remove_sessions():
+    data = request.get_json()
+
+    level, user = parseUser(data.get('user', ''))
+    if level:
+        if user.lower() in users and auth(data.get('auth'), user.lower()):
+            token_gen(user)
+            return {'success': True}
+        else:
+            return {'success': False, 'error': 'Invalid Password'}
+    elif user.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+
+    return {'success': True}
 
 @app.route('/create/<path:channel>', methods=['POST'])
 def make_channel(channel):
