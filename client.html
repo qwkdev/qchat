@@ -8,7 +8,7 @@
 	<style>
 		:root {
 			--c: #30f;
-			--c2: #60f;
+			--c2: #90f;
 			--grey: #555;
 			--grey-s: #5557;
 
@@ -262,12 +262,12 @@
 				color: transparent;
 			}
 			h1.lvl3, span.lvl3 {
-				background: linear-gradient(to bottom, #03a 20%, #0aa);
+				background: linear-gradient(to bottom, #03c 20%, #0cc);
 				background-clip: text;
 				color: transparent;
 			}
 			h1.lvl2, span.lvl2 {
-				background: linear-gradient(to bottom, #c80 20%, #cc0);
+				background: linear-gradient(to bottom, #c80 20%, #dc0);
 				background-clip: text;
 				color: transparent;
 			}
@@ -413,7 +413,7 @@
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
 		<p id="logo"><b>Q</b>Chat <span id="version">v0.0</span></p>
-		<p id="channel">#main</p>
+		<p id="channel"></p>
 	</div>
 	
 	<div id="menu-wrapper" data-active="0">
@@ -440,7 +440,7 @@
 	</div>
 
 	<div id="bottom">
-		<textarea id="msg-input" placeholder="Message #main"></textarea>
+		<textarea id="msg-input" placeholder="Loading..."></textarea>
 
 		<div id="info">
 			<p>chat.qwk.zone</p>
@@ -449,7 +449,7 @@
 	</div>
 
 	<script>
-		const CHANNEL = 'main';
+		const CHANNEL = 'x';
 		const SERVER = 'http://127.0.0.1:5000';
 
 		function parseChannel(channel) {
@@ -462,7 +462,10 @@
 		}
 
 		const channelName = parseChannel(CHANNEL);
-		// TODO
+		document.getElementById('channel').innerText = channelName;
+
+		const msgInput = document.getElementById('msg-input');
+		msgInput.placeholder = `Message ${channelName}`;
 
 		const errorWall = document.getElementById('error');
 
@@ -600,7 +603,6 @@
 			menuWrapper.dataset.active = value;
 		}
 
-		const msgInput = document.getElementById('msg-input');
 		msgInput.addEventListener('keydown', e => {
 			if (e.key === 'Enter') {
 				if (e.shiftKey) return;
@@ -642,6 +644,7 @@
 				.catch(e => showError('Network Error:', e));
 		}
 
+		//! TODO: Use new session/token architecture
 		async function send(msg) {
 			const user = '@qwk';
 			const auth = 'password';

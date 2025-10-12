@@ -11,6 +11,7 @@ from datetime import datetime
 from flask_cors import CORS
 from pathlib import Path
 from zoneinfo import ZoneInfo
+import random
 
 import emoji
 
@@ -22,9 +23,21 @@ app.secret_key = 'example'  # os.getenv('app')
 
 MAX_CHATS = 100
 MAX_MESSAGE_LENGTH = 256
+TOKEN_LENGTH = 64
+
+#! TODO: Hash passwords
+#! TODO: Use Session/Token Architecture
+
+RNG = random.SystemRandom()
 
 #####
 
+def randomStr(n):
+    return ''.join([RNG.choice(
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+        'abcdefghijklmnopqrstuvwxyz' +
+        '0123456789'
+    ) for _ in range(n)])
 
 @app.route('/')
 def landing():
@@ -84,7 +97,7 @@ def parseMessage(text: str) -> str:
             if part[1:].lower() in users:
                 resp.append({
                     'type': 'mention',
-                    'level': users[part[1:].lower()][1],
+                    'level': users[part[1:].lower()][2],
                     'value': part
                 })
             else:
@@ -154,12 +167,35 @@ channels = {
     }
 }
 
-def auth(auth: str, user: str) -> bool:
-    return auth == users[user.lower()][0]
+def password(checkPassword: str, user: str) -> bool:
+    return checkPassword == users[user.lower()][0] #! TODO
+def auth(checkAuth: str, user: str) -> bool:
+    return checkAuth == users[user.lower()][1]
+
+def token_gen(user: str) -> str:
+    users[user.lower()][1] = randomStr(TOKEN_LENGTH)
+    return users[user.lower()][1]
 
 @app.route('/channels')
 def channel_debug():
     return channels
+
+@app.route('/login', methods=['POST'])
+def new_session():
+    data = request.get_json()
+
+    level, user = parseUser(data.get('user', ''))
+    if level:
+        if user.lower() in users and password(data.get('password'), user.lower()):
+            level = users[user.lower()][2]
+        else:
+            return {'success': False, 'error': 'Invalid Password'}
+    elif user.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+    else:
+        level = 0
+
+    return {'success': True, 'level': level, 'auth': token_gen(user.lower()) if level else ''}
 
 @app.route('/create/<path:channel>', methods=['POST'])
 def make_channel(channel):
@@ -171,7 +207,7 @@ def make_channel(channel):
     level, user = parseUser(data.get('user', ''))
     if level:
         if user.lower() in users and auth(data.get('auth'), user.lower()):
-            level = users[user.lower()][1]
+            level = users[user.lower()][2]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
     elif user.lower() in users:
@@ -213,7 +249,7 @@ def get_messages(channel):
     level, user = parseUser(data.get('user', ''))
     if level:
         if user.lower() in users and auth(data.get('auth'), user.lower()):
-            level = users[user.lower()][1]
+            level = users[user.lower()][2]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
     elif user.lower() in users:
@@ -243,7 +279,7 @@ def send_message(channel):
     level, user = parseUser(data.get('user', ''))
     if level:
         if user.lower() in users and auth(data.get('auth'), user.lower()):
-            level = users[user.lower()][1]
+            level = users[user.lower()][2]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
     elif user.lower() in users:
