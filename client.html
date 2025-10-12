@@ -63,24 +63,6 @@
 					stroke: #fff;
 				}
 			}
-			#logo {
-				user-select: none;
-				margin: 0;
-
-				font-family: monospace;
-				font-size: 2.5vh;
-				color: #fff;
-
-				b {
-					background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
-					background-clip: text;
-					color: transparent;
-				}
-				#version {
-					font-size: 2vh;
-					color: var(--grey);
-				}
-			}
 			#channel {
 				user-select: none;
 				margin: 0;
@@ -90,6 +72,25 @@
 				font-family: monospace;
 				font-size: 2.5vh;
 				color: var(--grey);
+			}
+		}
+		.logo {
+			user-select: none;
+			margin: 0;
+
+			font-family: monospace;
+			color: #fff;
+
+			font-size: 2.5vh;
+
+			b {
+				background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
+				background-clip: text;
+				color: transparent;
+			}
+			.version {
+				color: var(--grey);
+				font-size: 2vh;
 			}
 		}
 		#info {
@@ -138,6 +139,16 @@
 
 				background: #000;
 				box-shadow: 0 0 5vh 0 #000;
+
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+
+				.logo {
+					font-size: 3vh;
+					margin: 5vh 0;
+					text-align: center;
+				}
 			}
 			#close-menu {
 				position: relative;
@@ -412,13 +423,13 @@
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p id="logo"><b>Q</b>Chat <span id="version">v0.0</span></p>
+		<p class="logo"><b>Q</b>Chat <span class="version">v0.0</span></p>
 		<p id="channel"></p>
 	</div>
 	
 	<div id="menu-wrapper" data-active="0">
 		<div id="menu">
-			<p>hi</p>
+			<p class="logo"><b>Q</b>Chat</p>
 		</div>
 		<button id="close-menu" onclick="burger(0)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M15 6L9 12L15 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
