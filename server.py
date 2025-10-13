@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, abort
+from flask import Flask, jsonify, make_response, request, abort
 import requests as rq
 import hashlib
 import io
@@ -18,15 +18,20 @@ import emoji
 cwd = Path(__file__).parent.resolve()
 
 app = Flask('qChat', template_folder=cwd / 'templates', static_folder=cwd / 'static')
-CORS(app)
+CORS(app, supports_credentials=True, origins=[
+    'http://127.0.0.1:5500',
+    'http://localhost:5500'
+])
 app.secret_key = 'example'  # os.getenv('app')
+
+AUTH_COOKIE_NAME = 'auth'
 
 MAX_CHATS = 100
 MAX_MESSAGE_LENGTH = 256
 TOKEN_LENGTH = 64
+MAX_NAME_LENGTH = 16
 
 #! TODO: Hash passwords
-#! TODO: Use Session/Token Architecture
 
 RNG = random.SystemRandom()
 
@@ -67,7 +72,7 @@ def isotime(epoch: int) -> str:
     return datetime.fromtimestamp(epoch, ZoneInfo('Europe/London')).isoformat()
 
 def safeText(text: str) -> str:
-    return re.sub(r'[^a-zA-Z0-9_-]', '', text)
+    return re.sub(r'[^a-zA-Z0-9_-]', '', text)[:MAX_NAME_LENGTH]
 
 def splitPrefix(text: str, prefix: str) -> str:
     return [
@@ -77,7 +82,8 @@ def splitPrefix(text: str, prefix: str) -> str:
         ])
     ]
 
-def parseUser(user: str) -> tuple[bool, str]:
+def parseUser(user: str | None) -> tuple[bool, str]:
+    if not user: return False, ''
     if user.startswith('@'):
         return True, safeText(user[1:])
     return False, safeText(user)
@@ -195,23 +201,40 @@ def new_session():
     else:
         level = 0
 
-    return {'success': True, 'level': level, 'auth': token_gen(user.lower()) if level else ''}
+    resp = make_response(jsonify({'success': True, 'user': user, 'level': level}))
 
+    if level:
+        resp.set_cookie(
+            AUTH_COOKIE_NAME,
+            token_gen(user.lower()),
+            httponly=True,
+            secure=True,
+            samesite='None',
+            path='/'
+        )
+    
+    return resp
+    
 @app.route('/logout', methods=['POST'])
 def remove_sessions():
     data = request.get_json()
 
+    resp = {'success': True}
+
     level, user = parseUser(data.get('user', ''))
     if level:
-        if user.lower() in users and auth(data.get('auth'), user.lower()):
+        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
             token_gen(user)
-            return {'success': True}
+            resp = {'success': True}
         else:
-            return {'success': False, 'error': 'Invalid Password'}
+            resp = {'success': False, 'error': 'Invalid Auth'}
     elif user.lower() in users:
-        return {'success': False, 'error': 'Username registered'}
+        resp = {'success': False, 'error': 'Username registered'}
 
-    return {'success': True}
+    final = make_response(jsonify(resp))
+    final.set_cookie(AUTH_COOKIE_NAME, '', expires=0)
+
+    return final
 
 @app.route('/create/<path:channel>', methods=['POST'])
 def make_channel(channel):
@@ -222,7 +245,7 @@ def make_channel(channel):
 
     level, user = parseUser(data.get('user', ''))
     if level:
-        if user.lower() in users and auth(data.get('auth'), user.lower()):
+        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
             level = users[user.lower()][2]
         else:
             return {'success': False, 'error': 'Invalid Auth'}
@@ -264,9 +287,11 @@ def get_messages(channel):
 
     level, user = parseUser(data.get('user', ''))
     if level:
-        if user.lower() in users and auth(data.get('auth'), user.lower()):
+        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
             level = users[user.lower()][2]
         else:
+            print(user.lower(), user.lower() in users)
+            print(request.cookies.get(AUTH_COOKIE_NAME), users[user.lower()][1])
             return {'success': False, 'error': 'Invalid Auth'}
     elif user.lower() in users:
         return {'success': False, 'error': 'Username registered'}
@@ -294,7 +319,7 @@ def send_message(channel):
 
     level, user = parseUser(data.get('user', ''))
     if level:
-        if user.lower() in users and auth(data.get('auth'), user.lower()):
+        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
             level = users[user.lower()][2]
         else:
             return {'success': False, 'error': 'Invalid Auth'}

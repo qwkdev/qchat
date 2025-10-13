@@ -504,23 +504,24 @@
 		<p id="channel"></p>
 	</div>
 	
-	<div id="menu-wrapper" data-active="1">
+	<div id="menu-wrapper" data-active="0">
 		<div id="menu">
 			<p class="logo"><b>Q</b>Chat</p>
 
-			<div id="display-section" hidden>
+			<div id="login-section">
 				<p>Enter display name:</p>
-				<input type="text" placeholder="Name">
+				<input type="text" placeholder="Name" id="login-display" oninput="format(this)">
+				
+				<p>OR</p>
+
+				<input type="text" placeholder="Username" id="login-user" oninput="format(this)">
+				<input type="password" placeholder="Password" id="login-password">
+				<button onclick="login()">Login</button>
 			</div>
-			<div id="login-section" hidden>
-				<input type="text" placeholder="Username">
-				<input type="password" placeholder="Password">
-				<button>Login</button>
-			</div>
-			<div id="logout-section">
+			<div id="logout-section" hidden>
 				<p>Signed in as:</p>
-				<h2 class="lvl3">@qwk</h2>
-				<button>Logout</button>
+				<h2 class="lvl3" id="logged-in">@qwk</h2>
+				<button onclick="logout()">Logout</button>
 			</div>
 		</div>
 		<button id="close-menu" onclick="burger(0)">
@@ -552,8 +553,83 @@
 	</div>
 
 	<script>
+		//! TODO: Logout sequence (RESET session.user AND session.level)
+		//! TODO: Init message prompt for name
+
 		const CHANNEL = 'main';
 		const SERVER = 'http://127.0.0.1:5000';
+
+		let session = {
+			display: null,
+			user: null,
+			level: 0
+		}
+
+		const loginSection = document.getElementById('login-section');
+		const menuEle = {
+			display: document.getElementById('login-display'),
+			user: document.getElementById('login-user'),
+			password: document.getElementById('login-password'),
+			loggedin: document.getElementById('logged-in')
+		}
+		const logoutSection = document.getElementById('logout-section');
+
+		const MAX_NAME_LENGTH = 16;
+		function safeText(text) {
+			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, MAX_NAME_LENGTH);
+		}
+		function format(e) {
+			e.value = safeText(e.value);
+		}
+
+		function fixMenuSections() {
+			if (!session.user) {
+				loginSection.hidden = false;
+				logoutSection.hidden = true;
+
+				if (user) {
+					menuEle.display.value = '';
+					menuEle.user.value = session.user;
+				} else {
+					menuEle.display.value = session.display || '';
+					menuEle.user.value = '';
+				}
+				menuEle.password.value = '';
+			} else {
+				loginSection.hidden = true;
+				logoutSection.hidden = false;
+
+				menuEle.loggedin.innerText = parseUser(session.user, session.level);
+				menuEle.loggedin.className = `lvl${Number(session.level) || 0}`;
+			}
+		}
+		async function login() {
+			if (!menuEle.user.value || !menuEle.password.value) return;
+
+			format(menuEle.user);
+
+			await fetch(`${SERVER}/login`, {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					user: menuEle.user.value.startsWith('@') ? menuEle.user.value : '@' + menuEle.user.value,
+					password: menuEle.password.value
+				})
+			})
+				.then(resp => resp.json())
+				.then(data => {
+					if (data.success === true) {
+						session.user = data.user || null;
+						session.level = data.level || 0;
+
+						fixMenuSections();
+					} else showError('Client Error:', data.error);
+				})
+				.catch(e => showError('Network Error:', e));
+		}
 
 		function parseChannel(channel) {
 			if (
@@ -611,6 +687,10 @@
 			// 	default: return user;
 			// }
 		}
+		function getUser(force=false) {
+			//! TODO: Prompt if forced username
+			return session.user ? parseUser(session.user, session.level) : (session.display || '')
+		}
 
 		function checkExists(msgId) {
 			for (const e of chat.querySelectorAll('.chat:not(.template)')) {
@@ -632,12 +712,18 @@
 			const newChat = chatTemplate.cloneNode(true);
 			newChat.classList.remove('template');
 
+			const newUsername = newChat.querySelector('h1');
+			const newDate = newChat.querySelector('h2');
 			if (!user) {
-				newChat.querySelector('div').remove();
+				if (epoch === 0) newChat.querySelector('div').remove();
+				else {
+					newUsername.remove();
+					newDate.innerText = parseEpoch(epoch);
+				}
 			} else {
-				newChat.querySelector('h1').innerText = parseUser(user, level);
-				newChat.querySelector('h1').classList = `lvl${level}`;
-				newChat.querySelector('h2').innerText = parseEpoch(epoch);
+				newUsername.innerText = parseUser(user, level);
+				newUsername.classList = `lvl${level}`;
+				newDate.innerText = parseEpoch(epoch);
 			}
 
 			const text = newChat.querySelector('p');
@@ -698,6 +784,7 @@
 					document.createTextNode(text)
 				);
 				errorWall.hidden = false;
+				burger(0);
 			}
 		}
 
@@ -711,7 +798,7 @@
 				if (e.shiftKey) return;
 				else {
 					e.preventDefault();
-					addPending(msgInput.value, 4, 'qwk');
+					addPending(msgInput.value, session.level, session.user);
 					send(msgInput.value);
 					msgInput.value = '';
 				}
@@ -721,19 +808,15 @@
 		chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
 
 		async function sync() {
-			const user = 'xqwk';
-			const auth = 'password';
-
+			const user = getUser(false);
 			const latest = getLatest();
 			await fetch(`${SERVER}/get/${CHANNEL}?after=${latest}`, {
 				method: 'POST',
+				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({
-					user,
-					auth
-				})
+				body: JSON.stringify({ user })
 			})
 				.then(resp => resp.json())
 				.then(data => {
@@ -747,20 +830,15 @@
 				.catch(e => showError('Network Error:', e));
 		}
 
-		//! TODO: Use new session/token architecture
 		async function send(msg) {
-			const user = 'xqwk';
-			const auth = 'password';
+			const user = getUser(true);
 			await fetch(`${SERVER}/msg/${CHANNEL}`, {
 				method: 'POST',
+				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({
-					msg,
-					user,
-					auth
-				})
+				body: JSON.stringify({ msg, user })
 			})
 				.then(resp => resp.json())
 				.then(data => {
@@ -771,9 +849,9 @@
 				.catch(e => showError('Network Error:', e));
 		}
 
-		// sync();
-		// setInterval(() => sync(), 5000);
-		setInterval(() => showError('Example:', 'Error'), 1000);
+		sync();
+		setInterval(() => sync(), 5000);
+		// setInterval(() => showError('Example:', 'Error'), 1000);
 	</script>
 </body>
 </html>
