@@ -32,6 +32,7 @@ TOKEN_LENGTH = 64
 MAX_NAME_LENGTH = 16
 
 #! TODO: Hash passwords
+#! TODO: Use MySQL for channels
 
 RNG = random.SystemRandom()
 
