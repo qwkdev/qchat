@@ -12,8 +12,10 @@ from flask_cors import CORS
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import random
-
+import bcrypt
 import emoji
+from profanityfilter import ProfanityFilter
+pFilter = ProfanityFilter()
 
 cwd = Path(__file__).parent.resolve()
 
@@ -31,12 +33,19 @@ MAX_MESSAGE_LENGTH = 256
 TOKEN_LENGTH = 64
 MAX_NAME_LENGTH = 16
 
-#! TODO: Hash passwords
-#! TODO: Use MySQL for channels
+#! TODO: Proper filter usage (not always on)
+#! TODO: /dev/ Endpoint to set/get filter for channels
+#! TODO: Save channels/users on exit? or every ping or etc
+#! TODO: Use MySQL for channel chats?
 
 RNG = random.SystemRandom()
 
 #####
+
+def hash(plain: str) -> str:
+    return bcrypt.hashpw(plain, bcrypt.gensalt())
+def checkHash(plain: str, hashed: str) -> bool:
+    return bcrypt.checkpw(plain, hashed)
 
 def randomStr(n):
     return ''.join([RNG.choice(
@@ -61,6 +70,7 @@ def getip(request):
 
 @app.route('/ping')
 def ping():
+    saveChannels()
     return {'success': True}
 
 @app.route('/ip')
@@ -95,8 +105,11 @@ def parseChannel(c: str) -> tuple[int, str]:
     elif c.startswith('&'): return 1, '&'+safeText(c[1:])
     return 2, safeText(c)
 
-def parseMessage(text: str) -> str:
+def parseMessage(text: str, filter: bool=True) -> str:
     txt = emoji.emojize(text, language='alias')
+
+    if filter:
+        txt = pFilter.censor(txt)
 
     resp = []
     for part in splitPrefix(txt, '@'):
@@ -127,65 +140,43 @@ def parseMessage(text: str) -> str:
 
     return [i for i in final if i]
 
-users = {
-    'qwk': ['password', 'token', 4]
-}
-channels = {
-    'main': {
-        'level': 2,
-        'read': 0,
-        'write': 0,
-        'filter': True,
-        'chat': [
-            [0, 0, 3, '', ['- Start of chat']],
-            [1, 1710100000, 4, 'qwk', ['hello world']],
-            [2, 1710200000, 1, 'qwk', ['bye world']],
-            [11, 1711100000, 3, 'qwk', ['hello world']],
-            [12, 1711200000, 1, 'qwk', ['bye world']],
-            [21, 1712100000, 2, 'qwk', ['hello world']],
-            [22, 1712200000, 1, 'qwk', ['bye world']],
-            [31, 1713100000, 4, 'qwk', ['hello world']],
-            [32, 1713200000, 1, 'qwk', ['bye world']],
-            [41, 1714100000, 3, 'qwk', ['hello world']],
-            [42, 1714200000, 1, 'qwk', ['bye world']],
-            [51, 1715100000, 2, 'qwk', ['hello world']],
-            [52, 1715200000, 1, 'qwk', ['bye world']],
-        ]
-    },
-    'x': {
-        'level': 0,
-        'read': 3,
-        'write': 3,
-        'filter': True,
-        'chat': [
-            [0, 0, 0, '', ['- Start of chat']],
-            [1, 1759715003, 0, '', ['hello world']],
-            [2, 1759715006, 0, '', ['bye world']]
-        ]
-    },
-    'push': {
-        'level': 1,
-        'read': 0,
-        'write': 4,
-        'filter': False,
-        'chat': [
-            [0, 0, 0, '', ['- Start of chat']]
-        ]
-    }
-}
+users = {}
+channels = {}
+
+def loadUsers():
+    global users
+
+    with open(cwd/'users.json', encoding='utf-8') as f:
+        data = json.load(f)
+    users = {u: [i[0], None, i[1], i[2]] for u, i in data.items()}
+def saveUsers():
+    global users
+
+    data = {u: [i[0], i[2], i[3]] for u, i in users.items()}
+    with open(cwd/'users.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4)
+def loadChannels():
+    global channels
+
+    with open(cwd/'channels.json', encoding='utf-8') as f:
+        data = json.load(f)
+
+    channels = {c: {**i, 'chat': [[0, 0, 5, '', ['- Start of channel']]]} for c, i in data.items()}
+def saveChannels():
+    global channels
+
+    with open(cwd/'channels.json', 'w', encoding='utf-8') as f:
+        json.dump(channels, f, indent=4)
 
 def password(checkPassword: str, user: str) -> bool:
-    return checkPassword == users[user.lower()][0] #! TODO
+    return users[user.lower()][0] and checkHash(checkPassword, users[user.lower()][0])
 def auth(checkAuth: str, user: str) -> bool:
-    return checkAuth == users[user.lower()][1]
+    return users[user.lower()][1] and checkAuth == users[user.lower()][1]
 
 def token_gen(user: str) -> str:
+    global users
     users[user.lower()][1] = randomStr(TOKEN_LENGTH)
     return users[user.lower()][1]
-
-@app.route('/channels')
-def channel_debug():
-    return channels
 
 @app.route('/login', methods=['POST'])
 def new_session():
@@ -237,50 +228,6 @@ def remove_sessions():
 
     return final
 
-@app.route('/create/<path:channel>', methods=['POST'])
-def make_channel(channel):
-    global channels
-
-    cl, c = parseChannel(channel)
-    data = request.get_json()
-
-    level, user = parseUser(data.get('user', ''))
-    if level:
-        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
-            level = users[user.lower()][2]
-        else:
-            return {'success': False, 'error': 'Invalid Auth'}
-    elif user.lower() in users:
-        return {'success': False, 'error': 'Username registered'}
-    else:
-        level = 0
-
-    if level < 3:
-        return {'success': False, 'error': 'Access Denied'}
-
-    if c in channels:
-        return {'success': False, 'error': 'Invalid Channel Name'}
-    if (cl + 1) > level:
-        return {'success': False, 'error': 'Invalid Channel Level'}
-    if (read := request.args.get('read', 0)) > level:
-        return {'success': False, 'error': 'Invalid Read Level'}
-    if (write := request.args.get('write', 0)) > level:
-        return {'success': False, 'error': 'Invalid Write Level'}
-    if not (msgfilter := request.args.get('filter', 'true') != 'false') and level != 3:
-        return {'success': False, 'error': 'Filter Toggle Denied'}
-    
-    channels[c] = {
-        'level': cl,
-        'read': read,
-        'write': write,
-        'filter': msgfilter,
-        'chat': [
-            [0, epoch(), 0, '', ['- Start of channel']],
-        ]
-    }
-    
-    return {'success': True}
-
 @app.route('/get/<path:channel>', methods=['POST'])
 def get_messages(channel):
     _, c = parseChannel(channel)
@@ -311,6 +258,8 @@ def get_messages(channel):
 
 @app.route('/msg/<path:channel>', methods=['POST'])
 def send_message(channel):
+    global channels
+
     _, c = parseChannel(channel)
     data = request.get_json()
 
@@ -336,8 +285,121 @@ def send_message(channel):
     
     channels[c]['chat'].append([channels[c]['chat'][-1][0]+1, epoch(), level, user, msg])
     channels[c]['chat'] = channels[c]['chat'][-MAX_CHATS:]
+
+    channels[c]['total'] += 1
+    if level: users[user.lower()][3] += 1
     
     return {'success': True}
 
+@app.route('/dev/create/<path:channel>', methods=['POST'])
+def make_channel(channel):
+    global channels
+
+    cl, c = parseChannel(channel)
+    data = request.get_json()
+
+    level, user = parseUser(data.get('user', ''))
+    if level:
+        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
+            level = users[user.lower()][2]
+        else:
+            return {'success': False, 'error': 'Invalid Auth'}
+    elif user.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+    else:
+        level = 0
+
+    if level < 4:
+        return {'success': False, 'error': 'Access Denied'}
+
+    if c in channels:
+        return {'success': False, 'error': 'Invalid Channel Name'}
+    if (cl + 1) > level:
+        return {'success': False, 'error': 'Invalid Channel Level'}
+    if (read := data.get('read', 0)) > level:
+        return {'success': False, 'error': 'Invalid Read Level'}
+    if (write := data.get('write', 0)) > level:
+        return {'success': False, 'error': 'Invalid Write Level'}
+    if not (msgfilter := data.get('filter', True)) and level != 3:
+        return {'success': False, 'error': 'Filter Toggle Denied'}
+    
+    channels[c] = {
+        'total': 0,
+        'level': cl,
+        'read': read,
+        'write': write,
+        'filter': msgfilter,
+        'chat': [
+            [0, 0, 5, '', ['- Start of channel']],
+        ]
+    }
+    
+    return {'success': True}
+
+@app.route('/dev/signup', methods=['POST'])
+def signup():
+    global users
+    data = request.get_json()
+
+    level, user = parseUser(data.get('user', ''))
+    if level:
+        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
+            level = users[user.lower()][2]
+        else:
+            return {'success': False, 'error': 'Invalid Auth'}
+    elif user.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+    else:
+        level = 0
+
+    if level < 4:
+        return {'success': False, 'error': 'Access Denied'}
+    
+    newUser = data.get('new-user')
+    newLevel = int(data.get('level', 0))
+    newPassword = data.get('password')
+
+    if not any((newUser, newLevel, newPassword)):
+        return {'success': False, 'error': 'Missing params'}
+    if newUser.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+    if newLevel <= 0 or newLevel >= 4:
+        return {'success': False, 'error': 'Invalid level (1-3)'}
+    
+    users[newUser.lower()] = [hash(newPassword), None, newLevel]
+
+    return {'success': True}
+
+@app.route('/dev/hash')
+def dev_hash():
+    if not (text := request.args.get('text')): return {'hashed': '', 'text': ''}
+    return {'hashed': hash(text), 'text': text}
+
+@app.route('/dev/stats')
+def stats():
+    data = request.get_json()
+
+    level, user = parseUser(data.get('user', ''))
+    if level:
+        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
+            level = users[user.lower()][2]
+        else:
+            return {'success': False, 'error': 'Invalid Auth'}
+    elif user.lower() in users:
+        return {'success': False, 'error': 'Username registered'}
+    else:
+        level = 0
+
+    if level < 4:
+        return {'success': False, 'error': 'Access Denied'}
+
+    return {
+        'total': sum([channels[c]['total'] for c in channels]),
+        'channels': {c: i['total'] for c, i in channels.items()},
+        'users': {u: i[3] for u, i in users.items()}
+    }
+
+loadUsers()
+loadChannels()
 
 app.run(debug=True)

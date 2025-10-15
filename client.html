@@ -9,6 +9,11 @@
 		:root {
 			--c: #30f;
 			--c2: #90f;
+
+			--action: #205;
+			--action2: #2a006c;
+			--action3: #30a;
+
 			--grey: #555;
 			--grey-s: #5557;
 
@@ -171,6 +176,14 @@
 
 					font-family: monospace;
 					font-size: 2vh;
+
+					&:focus {
+						outline: none;
+						border-color: var(--c);
+					}
+					&::selection {
+						background: var(--c);
+					}
 				}
 				input[type="text"], input[type="password"] {
 					background: var(--fg);
@@ -181,14 +194,6 @@
 					font-size: 2vh;
 					padding-left: 1.25vh;
 					color: #fff;
-
-					&:focus {
-						outline: none;
-						border-color: var(--c);
-					}
-					&::selection {
-						background: var(--c);
-					}
 				}
 				button {
 					background: var(--fg2);
@@ -261,12 +266,12 @@
 			color: transparent !important;
 		}
 		.lvl3 {
-			background: linear-gradient(to bottom, #03c 20%, #0cc);
+			background: linear-gradient(to bottom, #02d 20%, #0cf);
 			background-clip: text;
 			color: transparent !important;
 		}
 		.lvl2 {
-			background: linear-gradient(to bottom, #c80 20%, #dc0);
+			background: linear-gradient(to bottom, #f80 20%, #ff0);
 			background-clip: text;
 			color: transparent !important;
 		}
@@ -485,6 +490,88 @@
 			display: none;
 		}
 
+		#alert {
+			width: 100vw;
+			height: 100vh;
+
+			position: absolute;
+			top: 0;
+			left: 0;
+
+			z-index: 100;
+			background: #0007;
+
+			#alert-box {
+				max-width: 80vw;
+				width: 50vh;
+
+				box-sizing: border-box;
+				padding: 2vh;
+
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+
+				background: var(--fg);
+				border: var(--border-width) solid var(--border);
+				border-radius: calc(var(--br) * 2);
+
+				#alert-text {
+					margin: 0;
+					text-align: center;
+
+					font-size: 3vh;
+					font-weight: 500;
+					font-family: Arial;
+					color: #fff;
+				}
+				#alert-options {
+					display: flex;
+
+					width: 100%;
+					margin-top: 2vh;
+					gap: .5vh;
+
+					button {
+						width: 100%;	
+						height: 4vh;
+
+						background: var(--fg2);
+						border: var(--border-width) solid var(--border);
+						border-radius: var(--br);
+
+						font-size: 1.5vh;
+						font-weight: 500;
+						font-family: monospace;
+						color: #fff;
+
+						&:hover {
+							background: var(--fg3);
+						}
+						&:focus {
+							outline: none;
+							border-color: var(--border2);
+						}
+						&::selection {
+							background: var(--c);
+						}
+					}
+					button.action {
+						background: var(--action);
+						border-color: var(--action3);
+
+						&:hover {
+							background: var(--action2);
+						}
+						&:focus {
+							border-color: var(--c);
+						}
+					}
+				}
+			}
+		}
+
 		@media only screen and (min-width: 100vh) {
 			#search {
 				width: 80vw;
@@ -543,6 +630,16 @@
 		<p></p>
 	</div>
 
+	<dialog id="alert">
+		<div id="alert-box">
+			<p id="alert-text">Example</p>
+			<div id="alert-options">
+				<button id="alert-cancel">CANCEL</button>
+				<button class="action" id="alert-ok">OK</button>
+			</div>
+		</div>
+	</dialog>
+
 	<div id="bottom">
 		<textarea id="msg-input" placeholder="Loading..."></textarea>
 
@@ -553,14 +650,10 @@
 	</div>
 
 	<script>
-		//! TODO: Logout sequence (RESET session.user AND session.level)
-		//! TODO: Init message prompt for name
-
 		const CHANNEL = 'main';
 		const SERVER = 'http://127.0.0.1:5000';
 
 		let session = {
-			display: null,
 			user: null,
 			level: 0
 		}
@@ -587,13 +680,7 @@
 				loginSection.hidden = false;
 				logoutSection.hidden = true;
 
-				if (user) {
-					menuEle.display.value = '';
-					menuEle.user.value = session.user;
-				} else {
-					menuEle.display.value = session.display || '';
-					menuEle.user.value = '';
-				}
+				menuEle.user.value = '';
 				menuEle.password.value = '';
 			} else {
 				loginSection.hidden = true;
@@ -624,6 +711,29 @@
 					if (data.success === true) {
 						session.user = data.user || null;
 						session.level = data.level || 0;
+						
+						menuEle.password.value = '';
+						fixMenuSections();
+					} else showError('Client Error:', data.error);
+				})
+				.catch(e => showError('Network Error:', e));
+		}
+		async function logout() {
+			await fetch(`${SERVER}/logout`, {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					user: getUser()
+				})
+			})
+				.then(resp => resp.json())
+				.then(data => {
+					if (data.success === true) {
+						session.user = null;
+						session.level = 0;
 
 						fixMenuSections();
 					} else showError('Client Error:', data.error);
@@ -688,8 +798,13 @@
 			// }
 		}
 		function getUser(force=false) {
-			//! TODO: Prompt if forced username
-			return session.user ? parseUser(session.user, session.level) : (session.display || '')
+			const resp = session.user ? parseUser(session.user, session.level) : (menuEle.display.value || '')
+
+			if (force && !resp) {
+				burger(1);
+				menuEle.display.focus();
+				showAlert('Please enter a display name to chat');
+			} else return resp;
 		}
 
 		function checkExists(msgId) {
@@ -766,7 +881,7 @@
 
 		function addPending(message, level, user) {
 			const parts = message.split('\n').flatMap((e, i, a) => i < a.length - 1 ? [e, {'type': 'newline'}] : [e]);
-			addChat(0, new Date().getTime() / 1000, level, user, parts, true, true);
+			addChat(0, new Date().getTime() / 1000, level, user.startsWith('@') ? user.slice(1) : user, parts, true, true);
 			chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
 		}
 		function removePending() {
@@ -788,19 +903,72 @@
 			}
 		}
 
+		const alertModal = document.getElementById('alert');
+		const alertEle = {
+			text: document.getElementById('alert-text'),
+			options: document.getElementById('alert-options'),
+			cancel: document.getElementById('alert-cancel'),
+			ok: document.getElementById('alert-ok')
+		}
+		alertModal.addEventListener('click', e => {
+			if (e.target === alertModal) alertModal.close();
+		});
+		function showAlert(html='Alert', ok=true, cancel=false) {
+			alertEle.text.innerHTML = html;
+			if (typeof ok === 'function') {
+				alertEle.ok.onclick = function() {
+					alertModal.close();
+					ok();
+				}
+			} else alertEle.ok.onclick = () => alertModal.close();
+			if (typeof cancel === 'function') {
+				alertEle.cancel.onclick = function() {
+					alertModal.close();
+					cancel();
+				}
+			} else alertEle.cancel.onclick = () => alertModal.close();
+
+			alertEle.options.hidden = ok === false && cancel === false;
+			alertEle.ok.hidden = ok === false;
+			alertEle.cancel.hidden = cancel === false;
+			alertModal.showModal();
+		}
+
 		const menuWrapper = document.getElementById('menu-wrapper');
 		function burger(value) {
 			menuWrapper.dataset.active = value;
+			if (value == 1) menuWrapper.querySelector('button, input, textarea')?.focus();
 		}
+		menuWrapper.addEventListener('click', e => {
+			if (e.target === menuWrapper) burger(0);
+		})
 
 		msgInput.addEventListener('keydown', e => {
 			if (e.key === 'Enter') {
 				if (e.shiftKey) return;
 				else {
 					e.preventDefault();
-					addPending(msgInput.value, session.level, session.user);
+					addPending(msgInput.value, session.level, getUser(true));
 					send(msgInput.value);
 					msgInput.value = '';
+				}
+			}
+		});
+		msgInput.addEventListener('focus', e => {
+			getUser(true);
+		});
+		document.addEventListener('keydown', e => {
+			if (e.key === 'Escape') burger(menuWrapper.dataset.active == 0 ? 1 : 0)
+			if (menuWrapper.dataset.active == 0) {
+				if (
+					e.key !== 'Tab' &&
+					e.key !== 'Escape' &&
+					e.target !== msgInput
+				) {
+					if (e.key === 'Enter' || e.key === 'Space') {
+						e.preventDefault();	
+					}
+					msgInput.focus();
 				}
 			}
 		});
@@ -851,7 +1019,6 @@
 
 		sync();
 		setInterval(() => sync(), 5000);
-		// setInterval(() => showError('Example:', 'Error'), 1000);
 	</script>
 </body>
 </html>
