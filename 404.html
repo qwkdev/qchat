@@ -650,7 +650,12 @@
 	</div>
 
 	<script>
-		const CHANNEL = window.location.pathname.slice(1) || 'main';
+		const MAX_NAME_LENGTH = 16;
+		function safeText(text) {
+			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, MAX_NAME_LENGTH);
+		}
+
+		const CHANNEL = safeText(window.location.pathname.slice(1)) || 'main';
 		const SERVER = 'https://qchat.pythonanywhere.com/';
 
 		let session = {
@@ -667,10 +672,6 @@
 		}
 		const logoutSection = document.getElementById('logout-section');
 
-		const MAX_NAME_LENGTH = 16;
-		function safeText(text) {
-			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, MAX_NAME_LENGTH);
-		}
 		function format(e) {
 			e.value = safeText(e.value);
 		}
