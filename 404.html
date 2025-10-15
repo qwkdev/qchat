@@ -7,6 +7,8 @@
 
 	<style>
 		:root {
+			--u: 1.7vw;
+
 			--c: #30f;
 			--c2: #90f;
 
@@ -22,10 +24,10 @@
 			--fg3: #252526;
 			--border: #333;
 			--border2: #555;
-			--border-width: .12vh;
-			--br: 1vh;
+			--border-width: calc(.12 * var(--u));
+			--br: calc(1 * var(--u));
 
-			--chat-margin: 1vh;
+			--chat-margin: calc(1 * var(--u));
 		}
 
 		body {
@@ -39,13 +41,13 @@
 			top: 0;
 			left: 0;
 
-			height: 5vh;
+			height: calc(5 * var(--u));
 
 			display: flex;
 			align-items: center;
 
-			width: calc(100vw - var(--chat-margin) - 2vh);
-			margin: 0 2vh 0 var(--chat-margin);
+			width: calc(100vw - var(--chat-margin) - calc(2 * var(--u)));
+			margin: 0 calc(2 * var(--u)) 0 var(--chat-margin);
 			gap: var(--chat-margin);
 
 			button {
@@ -53,8 +55,8 @@
 				background: transparent;
 				border: none;
 
-				width: 2.5vh;
-				height: 2.5vh;
+				width: calc(2.5 * var(--u));
+				height: calc(2.5 * var(--u));
 
 				&:focus {
 					outline: none;
@@ -64,8 +66,8 @@
 					position: absolute;
 					top: 0;
 					left: 0;
-					width: 2.5vh;
-					height: 2.5vh;
+					width: calc(2.5 * var(--u));
+					height: calc(2.5 * var(--u));
 					
 					stroke: #fff;
 				}
@@ -77,7 +79,7 @@
 				margin-left: auto;
 
 				font-family: monospace;
-				font-size: 2.5vh;
+				font-size: calc(2.5 * var(--u));
 				color: var(--grey);
 			}
 		}
@@ -88,7 +90,7 @@
 			font-family: monospace;
 			color: #fff;
 
-			font-size: 2.5vh;
+			font-size: calc(2.5 * var(--u));
 
 			b {
 				background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
@@ -97,15 +99,15 @@
 			}
 			.version {
 				color: var(--grey);
-				font-size: 2vh;
+				font-size: calc(2 * var(--u));
 			}
 		}
 		#info {
 			position: absolute;
-			bottom: 1vh;
+			bottom: calc(1 * var(--u));
 
-			width: calc(100vw - 1.2vh * 2);
-			margin: 0 1.2vh;
+			width: calc(100vw - (1.2 * var(--u)) * 2);
+			margin: 0 calc(1.2 * var(--u));
 
 			display: flex;
 			justify-content: space-between;
@@ -114,9 +116,9 @@
 			p {
 				margin: 0;
 
-				height: 2vh;
+				height: calc(2 * var(--u));
 				font-family: monospace;
-				font-size: 1.5vh;
+				font-size: calc(1.5 * var(--u));
 				color: var(--grey);
 
 				&::selection {
@@ -136,7 +138,7 @@
 			z-index: 50;
 
 			display: grid;
-			grid-template-columns: auto 5vh;
+			grid-template-columns: auto calc(5 * var(--u));
 
 			transition: .5s;
 
@@ -145,15 +147,15 @@
 				height: 100%;
 
 				background: #000;
-				box-shadow: 0 0 5vh 0 #000;
+				box-shadow: 0 0 calc(5 * var(--u)) 0 #000;
 
 				display: flex;
 				flex-direction: column;
 				align-items: center;
 
 				.logo {
-					font-size: 3vh;
-					margin: 5vh 0;
+					font-size: calc(3 * var(--u));
+					margin: calc(5 * var(--u)) 0;
 					text-align: center;
 				}
 				div {
@@ -164,18 +166,18 @@
 					flex-direction: column;
 					align-items: center;
 
-					gap: 1vh;
+					gap: calc(1 * var(--u));
 				}
 				div[hidden] {
 					display: none;
 				}
 				input[type="text"], input[type="password"], button {
 					width: 50%;
-					height: 5vh;
+					height: calc(5 * var(--u));
 					box-sizing: border-box;
 
 					font-family: monospace;
-					font-size: 2vh;
+					font-size: calc(2 * var(--u));
 
 					&:focus {
 						outline: none;
@@ -191,8 +193,8 @@
 					border-radius: var(--br);
 
 					font-family: monospace;
-					font-size: 2vh;
-					padding-left: 1.25vh;
+					font-size: calc(2 * var(--u));
+					padding-left: calc(1.25 * var(--u));
 					color: #fff;
 				}
 				button {
@@ -211,7 +213,7 @@
 					box-sizing: border-box;
 
 					font-family: monospace;
-					font-size: 2vh;
+					font-size: calc(2 * var(--u));
 
 					margin: 0;
 					text-align: center;
@@ -223,18 +225,18 @@
 					}
 				}
 				p:not(.logo) {
-					font-size: 1.5vh;
+					font-size: calc(1.5 * var(--u));
 				}
 
 				#logout-section h2 {
-					margin: 1vh 0 1.25vh 0;
+					margin: calc(1 * var(--u)) 0 calc(1.25 * var(--u)) 0;
 				}
 			}
 			#close-menu {
 				position: relative;
 
-				width: 5vh;
-				height: 5vh;
+				width: calc(5 * var(--u));
+				height: calc(5 * var(--u));
 
 				background: #000;
 				border: none;
@@ -249,8 +251,8 @@
 					left: 50%;
 					transform: translate(-50%, -50%);
 
-					width: 2.5vh;
-					height: 2.5vh;
+					width: calc(2.5 * var(--u));
+					height: calc(2.5 * var(--u));
 					
 					stroke: #fff;
 				}
@@ -278,14 +280,14 @@
 
 		#chats {
 			position: absolute;
-			top: 5.5vh;
+			top: calc(5.5 * var(--u));
 			left: 50%;
 			transform: translateX(-50%);
 
 			width: calc(100vw - var(--chat-margin) * 2);
-			height: 83.5vh;
+			height: calc(83.5 * var(--u));
 
-			padding-bottom: 1.25vh;
+			padding-bottom: calc(1.25 * var(--u));
 			box-sizing: border-box;
 
 			overflow-x: hidden;
@@ -293,7 +295,7 @@
 
 			display: flex;
 			flex-direction: column;
-			gap: 1.25vh;
+			gap: calc(1.25 * var(--u));
 
 			scrollbar-width: none;
 			&::-webkit-scrollbar {
@@ -312,22 +314,22 @@
 			border: var(--border-width) solid var(--border);
 			border-radius: var(--br);
 
-			padding: 0 .7vh .5vh .7vh;
+			padding: 0 calc(.7 * var(--u)) calc(.5 * var(--u)) calc(.7 * var(--u));
 
 			div {
 				display: flex;
 				align-items: center;
 
 				margin: 0;
-				margin-top: .7vh;
-				gap: .7vh;
+				margin-top: calc(.7 * var(--u));
+				gap: calc(.7 * var(--u));
 			}
 
 			h1 {
 				font-family: monospace;
 				margin: 0;
 
-				font-size: 1.8vh;
+				font-size: calc(1.8 * var(--u));
 				font-weight: 700;
 			}
 			h2 {
@@ -335,7 +337,7 @@
 				margin: 0;
 				color: var(--grey);
 
-				font-size: 1.2vh;
+				font-size: calc(1.2 * var(--u));
 				font-weight: 700;
 
 				&::selection {
@@ -344,12 +346,12 @@
 			}
 			p {
 				margin: 0;
-				margin-top: .7vh;
+				margin-top: calc(.7 * var(--u));
 				font-family: Arial;
 
-				font-size: 1.5vh;
+				font-size: calc(1.5 * var(--u));
 				font-weight: 500;
-				line-height: 2vh;
+				line-height: calc(2 * var(--u));
 			}
 
 			h1, p, span {
@@ -371,12 +373,12 @@
 
 		#error {
 			position: absolute;
-			top: 5vh;
+			top: calc(5 * var(--u));
 			left: 50%;
 			transform: translateX(-50%);
 
 			width: calc(100% - var(--chat-margin) * 2);
-			height: calc(100% - 16vh);
+			height: calc(100% - (16 * var(--u)));
 			
 			box-sizing: border-box;
 
@@ -396,14 +398,14 @@
 				text-align: center;
 
 				margin: 0;
-				font-size: 4vh;
+				font-size: calc(4 * var(--u));
 				color: #fff;
 				font-family: monospace;
 			}
 		}
 		#chat-wrapper:has(#error:not([hidden]))::before,
 		#chat-wrapper:has(#error:not([hidden]))::after {
-			height: 2vh;
+			height: calc(2 * var(--u));
 			background: #000;
 		}
 
@@ -413,29 +415,29 @@
 			left: 0;
 
 			width: 100vw;
-			height: 11vh;
+			height: calc(11 * var(--u));
 
 			background: #000;
 		}
 
 		#top, #bottom {
 			z-index: 10;
-			box-shadow: 0 0 1vh .5vh #000;
+			box-shadow: 0 0 calc(1 * var(--u)) calc(.5 * var(--u)) #000;
 		}
 
 		#msg-input { 
 			position: absolute;
-			bottom: 4vh;
+			bottom: calc(4 * var(--u));
 			left: 50%;
 			transform: translateX(-50%);
 
 			width: calc(100vw - var(--chat-margin) * 2);
-			height: 7vh;
+			height: calc(7 * var(--u));
 			resize: none;
 			border-radius: calc(var(--br) * 2);
 
-			font-size: 2vh;
-			padding: 2.2vh 2vh;
+			font-size: calc(2 * var(--u));
+			padding: calc(2.2 * var(--u)) calc(2 * var(--u));
 			box-sizing: border-box;
 
 			color: #ccc;
@@ -503,10 +505,10 @@
 
 			#alert-box {
 				max-width: 80vw;
-				width: 50vh;
+				width: calc(50 * var(--u));
 
 				box-sizing: border-box;
-				padding: 2vh;
+				padding: calc(2 * var(--u));
 
 				position: absolute;
 				top: 50%;
@@ -521,7 +523,7 @@
 					margin: 0;
 					text-align: center;
 
-					font-size: 3vh;
+					font-size: calc(3 * var(--u));
 					font-weight: 500;
 					font-family: Arial;
 					color: #fff;
@@ -530,18 +532,18 @@
 					display: flex;
 
 					width: 100%;
-					margin-top: 2vh;
-					gap: .5vh;
+					margin-top: calc(2 * var(--u));
+					gap: calc(.5 * var(--u));
 
 					button {
 						width: 100%;	
-						height: 4vh;
+						height: calc(4 * var(--u));
 
 						background: var(--fg2);
 						border: var(--border-width) solid var(--border);
 						border-radius: var(--br);
 
-						font-size: 1.5vh;
+						font-size: calc(1.5 * var(--u));
 						font-weight: 500;
 						font-family: monospace;
 						color: #fff;
@@ -572,12 +574,17 @@
 			}
 		}
 
+		@media only screen and (min-width: 70vh) {
+			:root {
+				--u: 1vh;
+			}
+		}
 		@media only screen and (min-width: 100vh) {
 			#search {
 				width: 80vw;
 			}
 			#results {
-				width: calc(80vw - 3.5vh);
+				width: calc(80vw - (3.5 * var(--u)));
 			}
 		}
 	</style>
