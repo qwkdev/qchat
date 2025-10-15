@@ -650,8 +650,8 @@
 	</div>
 
 	<script>
-		const CHANNEL = 'main';
-		const SERVER = 'http://127.0.0.1:5000';
+		const CHANNEL = window.location.pathname.slice(1) || 'main';
+		const SERVER = 'https://qchat.pythonanywhere.com/';
 
 		let session = {
 			user: null,

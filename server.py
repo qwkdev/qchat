@@ -1,8 +1,5 @@
 import os
-from flask import Flask, jsonify, make_response, request, abort
-import requests as rq
-import hashlib
-import io
+from flask import Flask, jsonify, make_response, request
 from copy import deepcopy as dc
 import json
 import time
@@ -33,8 +30,6 @@ MAX_MESSAGE_LENGTH = 256
 TOKEN_LENGTH = 64
 MAX_NAME_LENGTH = 16
 
-#! TODO: Proper filter usage (not always on)
-#! TODO: /dev/ Endpoint to set/get filter for channels
 #! TODO: Save channels/users on exit? or every ping or etc
 #! TODO: Use MySQL for channel chats?
 
@@ -165,8 +160,9 @@ def loadChannels():
 def saveChannels():
     global channels
 
+    data = {c: {k: v for k, v in i.items() if k != 'messages'} for c, i in channels.items()}
     with open(cwd/'channels.json', 'w', encoding='utf-8') as f:
-        json.dump(channels, f, indent=4)
+        json.dump(data, f, indent=4)
 
 def password(checkPassword: str, user: str) -> bool:
     return users[user.lower()][0] and checkHash(checkPassword, users[user.lower()][0])
@@ -178,20 +174,37 @@ def token_gen(user: str) -> str:
     users[user.lower()][1] = randomStr(TOKEN_LENGTH)
     return users[user.lower()][1]
 
-@app.route('/login', methods=['POST'])
-def new_session():
+def login(request, min_level: int=0, use_password: bool=False):
     data = request.get_json()
+    if not data: return False, {'success': False, 'error': 'Invalid/No JSON'}
 
     level, user = parseUser(data.get('user', ''))
     if level:
-        if user.lower() in users and password(data.get('password'), user.lower()):
-            level = users[user.lower()][2]
+        if use_password:
+            if user.lower() in users and password(data.get('password'), user.lower()):
+                level = users[user.lower()][2]
+            else:
+                return {'success': False, 'error': 'Invalid Password'}
         else:
-            return {'success': False, 'error': 'Invalid Password'}
+            if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
+                level = users[user.lower()][2]
+            else:
+                return False, {'success': False, 'error': 'Invalid Auth'}
     elif user.lower() in users:
-        return {'success': False, 'error': 'Username registered'}
+        return False, {'success': False, 'error': 'Username registered'}
     else:
         level = 0
+
+    if level < min_level:
+        return False, {'success': False, 'error': 'Access Denied'}
+    
+    return True, (level, user)
+
+@app.route('/login', methods=['POST'])
+def new_session():
+    valid, login_resp = login(request, use_password=True)
+    if not valid: return login_resp
+    level, user = login_resp
 
     resp = make_response(jsonify({'success': True, 'user': user, 'level': level}))
 
@@ -210,7 +223,6 @@ def new_session():
 @app.route('/logout', methods=['POST'])
 def remove_sessions():
     data = request.get_json()
-
     resp = {'success': True}
 
     level, user = parseUser(data.get('user', ''))
@@ -231,20 +243,10 @@ def remove_sessions():
 @app.route('/get/<path:channel>', methods=['POST'])
 def get_messages(channel):
     _, c = parseChannel(channel)
-    data = request.get_json()
 
-    level, user = parseUser(data.get('user', ''))
-    if level:
-        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
-            level = users[user.lower()][2]
-        else:
-            print(user.lower(), user.lower() in users)
-            print(request.cookies.get(AUTH_COOKIE_NAME), users[user.lower()][1])
-            return {'success': False, 'error': 'Invalid Auth'}
-    elif user.lower() in users:
-        return {'success': False, 'error': 'Username registered'}
-    else:
-        level = 0
+    valid, login_resp = login(request)
+    if not valid: return login_resp
+    level, _ = login_resp
 
     if c not in channels:
         return {'success': False, 'error': 'Invalid Channel'}
@@ -265,18 +267,11 @@ def send_message(channel):
 
     if not data.get('msg'): return {'success': False}
 
-    msg = parseMessage(data.get('msg', '')[:MAX_MESSAGE_LENGTH])
+    msg = parseMessage(data.get('msg', '')[:MAX_MESSAGE_LENGTH], channels[c].get('filter', True))
 
-    level, user = parseUser(data.get('user', ''))
-    if level:
-        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
-            level = users[user.lower()][2]
-        else:
-            return {'success': False, 'error': 'Invalid Auth'}
-    elif user.lower() in users:
-        return {'success': False, 'error': 'Username registered'}
-    else:
-        level = 0
+    valid, login_resp = login(request)
+    if not valid: return login_resp
+    level, user = login_resp
 
     if c not in channels:
         return {'success': False, 'error': 'Invalid Channel'}
@@ -298,19 +293,9 @@ def make_channel(channel):
     cl, c = parseChannel(channel)
     data = request.get_json()
 
-    level, user = parseUser(data.get('user', ''))
-    if level:
-        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
-            level = users[user.lower()][2]
-        else:
-            return {'success': False, 'error': 'Invalid Auth'}
-    elif user.lower() in users:
-        return {'success': False, 'error': 'Username registered'}
-    else:
-        level = 0
-
-    if level < 4:
-        return {'success': False, 'error': 'Access Denied'}
+    valid, login_resp = login(request, 4)
+    if not valid: return login_resp
+    level, _ = login_resp
 
     if c in channels:
         return {'success': False, 'error': 'Invalid Channel Name'}
@@ -341,19 +326,8 @@ def signup():
     global users
     data = request.get_json()
 
-    level, user = parseUser(data.get('user', ''))
-    if level:
-        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
-            level = users[user.lower()][2]
-        else:
-            return {'success': False, 'error': 'Invalid Auth'}
-    elif user.lower() in users:
-        return {'success': False, 'error': 'Username registered'}
-    else:
-        level = 0
-
-    if level < 4:
-        return {'success': False, 'error': 'Access Denied'}
+    valid, login_resp = login(request, 4)
+    if not valid: return login_resp
     
     newUser = data.get('new-user')
     newLevel = int(data.get('level', 0))
@@ -373,31 +347,38 @@ def signup():
 @app.route('/dev/hash')
 def dev_hash():
     if not (text := request.args.get('text')): return {'hashed': '', 'text': ''}
+    print(text, type(text))
     return {'hashed': hash(text), 'text': text}
 
 @app.route('/dev/stats')
 def stats():
-    data = request.get_json()
-
-    level, user = parseUser(data.get('user', ''))
-    if level:
-        if user.lower() in users and auth(request.cookies.get(AUTH_COOKIE_NAME), user.lower()):
-            level = users[user.lower()][2]
-        else:
-            return {'success': False, 'error': 'Invalid Auth'}
-    elif user.lower() in users:
-        return {'success': False, 'error': 'Username registered'}
-    else:
-        level = 0
-
-    if level < 4:
-        return {'success': False, 'error': 'Access Denied'}
+    valid, login_resp = login(request, 4)
+    if not valid: return login_resp
 
     return {
         'total': sum([channels[c]['total'] for c in channels]),
         'channels': {c: i['total'] for c, i in channels.items()},
         'users': {u: i[3] for u, i in users.items()}
     }
+
+@app.route('/dev/channels')
+def get_channels():
+    valid, login_resp = login(request, 4)
+    if not valid: return login_resp
+
+    return {c: {k: v for k, v in i.items() if k != 'messages'} for c, i in channels.items()}
+
+@app.route('/dev/edit/<path:channel>')
+def dev_edit_channel(channel):
+    global channels
+
+    data = request.get_json()
+    _, c = parseChannel(channel)
+
+    valid, login_resp = login(request, 4)
+    if not valid: return login_resp
+
+    channels[c] |= data.get('edits', {})
 
 loadUsers()
 loadChannels()
