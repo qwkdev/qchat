@@ -7,8 +7,7 @@
 
 	<style>
 		:root {
-			/* --u: 1.7vw; */
-			--u: 1dvh;
+			--u: 1.8vw;
 
 			--c: #30f;
 			--c2: #90f;
@@ -129,10 +128,10 @@
 		}
 
 		#menu-wrapper {
+			pointer-events: none;
 			position: absolute;
 			top: 0;
-			left: -100%;
-
+			left: -100vw;
 			width: 100vw;
 			height: 100vh;
 
@@ -261,6 +260,7 @@
 		}
 		#menu-wrapper[data-active="1"] {
 			left: 0;
+			pointer-events: auto;
 		}
 
 		.lvl4 {
@@ -286,7 +286,7 @@
 			transform: translateX(-50%);
 
 			width: calc(100vw - var(--chat-margin) * 2);
-			height: calc(83.5 * var(--u));
+			height: calc(100vh - (16.5 * var(--u)));
 
 			padding-bottom: calc(1.25 * var(--u));
 			box-sizing: border-box;
@@ -575,9 +575,15 @@
 			}
 		}
 
-		@media only screen and (min-width: 70vh) {
+		@media only screen and (min-aspect-ratio: 3/4) {
 			:root {
-				--u: 1vh;
+				--u: 1.2vh;
+			}
+		}
+		@media only screen and (min-aspect-ratio: 1/1) {
+			#menu-wrapper {
+				left: -80vh;
+				grid-template-columns: calc(80vh - (5 * var(--u))) calc(5 * var(--u));
 			}
 		}
 		@media only screen and (min-width: 100vh) {
@@ -595,7 +601,7 @@
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b>Q</b>Chat <span class="version">v0.0</span></p>
+		<p class="logo"><b>Q</b>Chat <span class="version">v1.2</span></p>
 		<p id="channel"></p>
 	</div>
 	
@@ -951,7 +957,6 @@
 		menuWrapper.addEventListener('click', e => {
 			if (e.target === menuWrapper) burger(0);
 		})
-
 		msgInput.addEventListener('keydown', e => {
 			if (e.key === 'Enter') {
 				if (e.shiftKey) return;
