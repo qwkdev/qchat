@@ -601,7 +601,7 @@
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b>Q</b>Chat <span class="version">v1.3</span></p>
+		<p class="logo"><b>Q</b>Chat <span class="version">v1.4</span></p>
 		<p id="channel"></p>
 	</div>
 	
@@ -1031,8 +1031,24 @@
 				.catch(e => showError('Network Error:', e));
 		}
 
-		sync();
-		setInterval(() => sync(), 5000);
+		let syncInterval;
+		function startSync() {
+			if (!syncInterval) {
+				sync();
+				syncInterval = setInterval(sync, 5000);
+			}
+		}
+		function stopSync() {
+			if (syncInterval) {
+				clearInterval(syncInterval);
+				syncInterval = null;
+			}
+		}
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden) stopSync();
+			else startSync();
+		});
+		startSync();
 	</script>
 </body>
 </html>
