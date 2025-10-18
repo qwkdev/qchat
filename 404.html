@@ -1044,10 +1044,14 @@
 				syncInterval = null;
 			}
 		}
-		document.addEventListener('visibilitychange', () => {
-			if (document.hidden) stopSync();
-			else startSync();
+		
+		window.addEventListener('message', e => {
+			if (e.data && e.data.type === 'control-sync') {
+				if (e.data.sync) startSync();
+				else stopSync();
+			}
 		});
+
 		startSync();
 	</script>
 </body>
