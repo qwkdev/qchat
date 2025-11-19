@@ -302,6 +302,25 @@ body {
 .pending {
 	border-color: var(--border2);
 }
+
+/* #new {
+	width: max-content;
+	box-sizing: border-box;
+	background: var(--fg);
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--br);
+	position: absolute;
+	bottom: 15vh;
+	right: 5vw;
+
+	z-index: 10;
+
+	p {
+		color: #fff;
+		font-family: Arial;
+	}
+} */
+
 #error {
 	position: absolute;
 	top: calc(5 * var(--u));
@@ -514,7 +533,7 @@ body {
 			</div>
 			<div id="logout-section" hidden>
 				<p>Signed in as:</p>
-				<h2 class="lvl3" id="logged-in">@qwk</h2>
+				<h2 id="logged-in"></h2>
 				<button onclick="logout()">Logout</button>
 			</div>
 		</div>
@@ -532,6 +551,10 @@ body {
 			<p></p>
 		</div>
 	</div>
+
+	<!-- <button id="new">
+		<p>1 New</p>
+	</button> -->
 
 	<div id="error" hidden>
 		<p></p>
@@ -879,8 +902,6 @@ body {
 				}
 			}
 		});
-	
-		chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
 
 		async function sync() {
 			const user = getUser(false);
@@ -944,6 +965,8 @@ body {
 			}
 		});
 
+		chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+		sync().then(() => chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' }));
 		startSync();
 	</script>
 </body>
