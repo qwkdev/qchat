@@ -6,594 +6,487 @@
 	<title>QChat</title>
 
 	<style>
-		:root {
-			--u: 1.8vw;
-
-			--c: #30f;
-			--c2: #90f;
-
-			--action: #205;
-			--action2: #2a006c;
-			--action3: #30a;
-
-			--grey: #555;
-			--grey-s: #5557;
-
-			--fg: #141415;
-			--fg2: #1f1f20;
-			--fg3: #252526;
-			--border: #333;
-			--border2: #555;
-			--border-width: calc(.12 * var(--u));
-			--br: calc(1 * var(--u));
-
-			--chat-margin: calc(1 * var(--u));
-		}
-
-		body {
-			margin: 0;
-			background: #000;
-
-			overflow: hidden;
-		}
-		#top {
-			position: absolute;
-			top: 0;
-			left: 0;
-
-			height: calc(5 * var(--u));
-
-			display: flex;
-			align-items: center;
-
-			width: calc(100vw - var(--chat-margin) - calc(2 * var(--u)));
-			margin: 0 calc(2 * var(--u)) 0 var(--chat-margin);
-			gap: var(--chat-margin);
-
-			button {
-				position: relative;
-				background: transparent;
-				border: none;
-
-				width: calc(2.5 * var(--u));
-				height: calc(2.5 * var(--u));
-
-				&:focus {
-					outline: none;
-				}
-
-				svg {
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: calc(2.5 * var(--u));
-					height: calc(2.5 * var(--u));
-					
-					stroke: #fff;
-				}
-			}
-			#channel {
-				user-select: none;
-				margin: 0;
-
-				margin-left: auto;
-
-				font-family: monospace;
-				font-size: calc(2.5 * var(--u));
-				color: var(--grey);
-			}
-		}
-		.logo {
-			user-select: none;
-			margin: 0;
-
-			font-family: monospace;
-			color: #fff;
-
-			font-size: calc(2.5 * var(--u));
-
-			b {
-				background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
-				background-clip: text;
-				color: transparent;
-			}
-			.version {
-				color: var(--grey);
-				font-size: calc(2 * var(--u));
-			}
-		}
-		#info {
-			position: absolute;
-			bottom: calc(1 * var(--u));
-
-			width: calc(100vw - (1.2 * var(--u)) * 2);
-			margin: 0 calc(1.2 * var(--u));
-
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-
-			p {
-				margin: 0;
-
-				height: calc(2 * var(--u));
-				font-family: monospace;
-				font-size: calc(1.5 * var(--u));
-				color: var(--grey);
-
-				&::selection {
-					background: var(--grey-s);
-				}
-			}
-		}
-
-		#menu-wrapper {
-			pointer-events: none;
-			position: absolute;
-			top: 0;
-			left: -100vw;
-			width: 100vw;
-			height: 100dvh;
-
-			z-index: 50;
-
-			display: grid;
-			grid-template-columns: auto calc(5 * var(--u));
-
-			transition: .5s;
-
-			#menu {
-				width: 100%;
-				height: 100%;
-
-				background: #000;
-				box-shadow: 0 0 calc(5 * var(--u)) 0 #000;
-
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-
-				.logo {
-					font-size: calc(3 * var(--u));
-					margin: calc(5 * var(--u)) 0;
-					text-align: center;
-				}
-				div {
-					width: 100%;
-					height: max-content;
-
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-
-					gap: calc(1 * var(--u));
-				}
-				div[hidden] {
-					display: none;
-				}
-				input[type="text"], input[type="password"], button {
-					width: 50%;
-					height: calc(5 * var(--u));
-					box-sizing: border-box;
-
-					font-family: monospace;
-					font-size: calc(2 * var(--u));
-
-					&:focus {
-						outline: none;
-						border-color: var(--c);
-					}
-					&::selection {
-						background: var(--c);
-					}
-				}
-				input[type="text"], input[type="password"] {
-					background: var(--fg);
-					border: var(--border-width) solid var(--border);
-					border-radius: var(--br);
-
-					font-family: monospace;
-					font-size: calc(2 * var(--u));
-					padding-left: calc(1.25 * var(--u));
-					color: #fff;
-				}
-				button {
-					background: var(--fg2);
-					border: var(--border-width) solid var(--border2);
-					border-radius: var(--br);
-					
-					color: #fff;
-
-					&:hover {
-						background: var(--fg3);
-					}
-				}
-				h1, h2, p:not(.logo) {
-					width: 50%;
-					box-sizing: border-box;
-
-					font-family: monospace;
-					font-size: calc(2 * var(--u));
-
-					margin: 0;
-					text-align: center;
-
-					color: #fff;
-
-					&::selection {
-						background: #fff5;
-					}
-				}
-				p:not(.logo) {
-					font-size: calc(1.5 * var(--u));
-				}
-
-				#logout-section h2 {
-					margin: calc(1 * var(--u)) 0 calc(1.25 * var(--u)) 0;
-				}
-			}
-			#close-menu {
-				position: relative;
-
-				width: calc(5 * var(--u));
-				height: calc(5 * var(--u));
-
-				background: #000;
-				border: none;
-
-				&:focus {
-					outline: none;
-				}
-
-				svg {
-					position: absolute;
-					top: 50%;
-					left: 50%;
-					transform: translate(-50%, -50%);
-
-					width: calc(2.5 * var(--u));
-					height: calc(2.5 * var(--u));
-					
-					stroke: #fff;
-				}
-			}
-		}
-		#menu-wrapper[data-active="1"] {
-			left: 0;
-			pointer-events: auto;
-		}
-
-		.lvl4 {
-			background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
-			background-clip: text;
-			color: transparent !important;
-		}
-		.lvl3 {
-			background: linear-gradient(to bottom, #02d 20%, #0cf);
-			background-clip: text;
-			color: transparent !important;
-		}
-		.lvl2 {
-			background: linear-gradient(to bottom, #f80 20%, #ff0);
-			background-clip: text;
-			color: transparent !important;
-		}
-
-		#chats {
-			position: absolute;
-			top: calc(5.5 * var(--u));
-			left: 50%;
-			transform: translateX(-50%);
-
-			width: calc(100vw - var(--chat-margin) * 2);
-			height: calc(100vh - (16.5 * var(--u)));
-
-			padding-bottom: calc(1.25 * var(--u));
-			box-sizing: border-box;
-
-			overflow-x: hidden;
-			overflow-y: scroll;
-
-			display: flex;
-			flex-direction: column;
-			gap: calc(1.25 * var(--u));
-
-			scrollbar-width: none;
-			&::-webkit-scrollbar {
-				display: none;
-			}
-			&:focus {
-				outline: var(--border-width) solid var(--c);
-			}
-		}
-		.chat {
-			width: 100%;
-			height: min-content;
-
-			box-sizing: border-box;
-			background: var(--fg);
-			border: var(--border-width) solid var(--border);
-			border-radius: var(--br);
-
-			padding: 0 calc(.7 * var(--u)) calc(.5 * var(--u)) calc(.7 * var(--u));
-
-			div {
-				display: flex;
-				align-items: center;
-
-				margin: 0;
-				margin-top: calc(.7 * var(--u));
-				gap: calc(.7 * var(--u));
-			}
-
-			h1 {
-				font-family: monospace;
-				margin: 0;
-
-				font-size: calc(1.8 * var(--u));
-				font-weight: 700;
-			}
-			h2 {
-				font-family: monospace;
-				margin: 0;
-				color: var(--grey);
-
-				font-size: calc(1.2 * var(--u));
-				font-weight: 700;
-
-				&::selection {
-					background: var(--grey-s);
-				}
-			}
-			p {
-				margin: 0;
-				margin-top: calc(.7 * var(--u));
-				font-family: Arial;
-
-				font-size: calc(1.5 * var(--u));
-				font-weight: 500;
-				line-height: calc(2 * var(--u));
-			}
-
-			h1, p, span {
-				color: #fff;
-
-				&::selection {
-					background: #fff5;
-				}
-			}
-			.mention {
-				padding: var(--border-width);
-				border: var(--border-width) solid var(--border);
-				border-radius: calc(var(--br) / 2);
-			}
-		}
-		.pending {
-			border-color: var(--border2);
-		}
-
-		#error {
-			position: absolute;
-			top: calc(5 * var(--u));
-			left: 50%;
-			transform: translateX(-50%);
-
-			width: calc(100% - var(--chat-margin) * 2);
-			height: calc(100% - (16 * var(--u)));
-			
-			box-sizing: border-box;
-
-			background: var(--fg);
-			border: var(--border-width) solid var(--border);
-			border-radius: var(--br);
-
-			z-index: 20;
-
-			p {
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-
-				width: 80%;
-				text-align: center;
-
-				margin: 0;
-				font-size: calc(4 * var(--u));
-				color: #fff;
-				font-family: monospace;
-			}
-		}
-		#chat-wrapper:has(#error:not([hidden]))::before,
-		#chat-wrapper:has(#error:not([hidden]))::after {
-			height: calc(2 * var(--u));
-			background: #000;
-		}
-
-		#bottom {
-			position: absolute;
-			bottom: 0;
-			left: 0;
-
-			width: 100vw;
-			height: calc(11 * var(--u));
-
-			background: #000;
-		}
-
-		#top, #bottom {
-			z-index: 10;
-			box-shadow: 0 0 calc(1 * var(--u)) calc(.5 * var(--u)) #000;
-		}
-
-		#msg-input { 
-			position: absolute;
-			bottom: calc(4 * var(--u));
-			left: 50%;
-			transform: translateX(-50%);
-
-			width: calc(100vw - var(--chat-margin) * 2);
-			height: calc(7 * var(--u));
-			resize: none;
-			border-radius: calc(var(--br) * 2);
-
-			font-size: calc(2 * var(--u));
-			padding: calc(2.2 * var(--u)) calc(2 * var(--u));
-			box-sizing: border-box;
-
-			color: #ccc;
-
-			background: var(--fg);
-			border: var(--border-width) solid var(--border);
-
-			transition: .4s;
-
-			&:focus {
-				outline: none;
-				border-color: var(--c);
-			}
-			&::selection {
-				background: var(--c);
-				color: #fff;
-			}
-		}
-
-		.underlined {
-			color: var(--grey);
-			font-family: monospace;
-			font-weight: 500;
-			position: relative;
-			transition: .2s;
-			z-index: 2;
-			text-decoration: none;
-		}
-		.underline {
-			--widen: 0%;
-			--fix: 0%;
-			width: calc(100% + var(--widen));
-			transform: translateX(calc(-100% + var(--fix)));
-			height: 1px;
-			background: var(--grey);
-			position: absolute;
-			bottom: 0;
-			transition: .2s;
-			z-index: -1;
-		}
-		.underlined:hover {
-			color: #000;
-		}
-		.underlined:hover .underline {
-			height: 100%;
-		}
-		.underlined::selection {
-			background: #fff5;
-		}
-
-		.template {
-			display: none;
-		}
-
-		#alert {
-			width: 100vw;
-			height: 100dvh;
-
-			position: absolute;
-			top: 0;
-			left: 0;
-
-			z-index: 100;
-			background: #0007;
-
-			#alert-box {
-				max-width: 80vw;
-				width: calc(50 * var(--u));
-
-				box-sizing: border-box;
-				padding: calc(2 * var(--u));
-
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-
-				background: var(--fg);
-				border: var(--border-width) solid var(--border);
-				border-radius: calc(var(--br) * 2);
-
-				#alert-text {
-					margin: 0;
-					text-align: center;
-
-					font-size: calc(3 * var(--u));
-					font-weight: 500;
-					font-family: Arial;
-					color: #fff;
-				}
-				#alert-options {
-					display: flex;
-
-					width: 100%;
-					margin-top: calc(2 * var(--u));
-					gap: calc(.5 * var(--u));
-
-					button {
-						width: 100%;	
-						height: calc(4 * var(--u));
-
-						background: var(--fg2);
-						border: var(--border-width) solid var(--border);
-						border-radius: var(--br);
-
-						font-size: calc(1.5 * var(--u));
-						font-weight: 500;
-						font-family: monospace;
-						color: #fff;
-
-						&:hover {
-							background: var(--fg3);
-						}
-						&:focus {
-							outline: none;
-							border-color: var(--border2);
-						}
-						&::selection {
-							background: var(--c);
-						}
-					}
-					button.action {
-						background: var(--action);
-						border-color: var(--action3);
-
-						&:hover {
-							background: var(--action2);
-						}
-						&:focus {
-							border-color: var(--c);
-						}
-					}
-				}
-			}
-		}
-
-		@media only screen and (min-aspect-ratio: 3/4) {
-			:root {
-				--u: 1.2vh;
-			}
-		}
-		@media only screen and (min-aspect-ratio: 1/1) {
-			#menu-wrapper {
-				left: -80vh;
-				grid-template-columns: calc(80vh - (5 * var(--u))) calc(5 * var(--u));
-			}
-		}
-		@media only screen and (min-width: 100vh) {
-			#search {
-				width: 80vw;
-			}
-			#results {
-				width: calc(80vw - (3.5 * var(--u)));
-			}
-		}
+:root {
+	--u: 1.8vw;
+	--c: #30f;
+	--c2: #90f;
+	--action: #205;
+	--action2: #2a006c;
+	--action3: #30a;
+	--grey: #555;
+	--grey-s: #5557;
+	--fg: #141415;
+	--fg2: #1f1f20;
+	--fg3: #252526;
+	--border: #333;
+	--border2: #555;
+	--border-width: calc(.12 * var(--u));
+	--br: calc(1 * var(--u));
+	--chat-margin: calc(1 * var(--u));
+}
+body {
+	margin: 0;
+	background: #000;
+	overflow: hidden;
+}
+#top {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: calc(5 * var(--u));
+	display: flex;
+	align-items: center;
+	width: calc(100vw - var(--chat-margin) - calc(2 * var(--u)));
+	margin: 0 calc(2 * var(--u)) 0 var(--chat-margin);
+	gap: var(--chat-margin);
+}
+#top button {
+	position: relative;
+	background: transparent;
+	border: none;
+	width: calc(2.5 * var(--u));
+	height: calc(2.5 * var(--u));
+}
+#top button:focus {
+	outline: none;
+}
+#top button svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: calc(2.5 * var(--u));
+	height: calc(2.5 * var(--u));
+	stroke: #fff;
+}
+#top #channel {
+	user-select: none;
+	margin: 0;
+	margin-left: auto;
+	font-family: monospace;
+	font-size: calc(2.5 * var(--u));
+	color: var(--grey);
+}
+.logo {
+	user-select: none;
+	margin: 0;
+	font-family: monospace;
+	color: #fff;
+	font-size: calc(2.5 * var(--u));
+}
+.logo b {
+	background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
+	background-clip: text;
+	color: transparent;
+}
+.logo .version {
+	color: var(--grey);
+	font-size: calc(2 * var(--u));
+}
+#info {
+	position: absolute;
+	bottom: calc(1 * var(--u));
+	width: calc(100vw - (1.2 * var(--u)) * 2);
+	margin: 0 calc(1.2 * var(--u));
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+#info p {
+	margin: 0;
+	height: calc(2 * var(--u));
+	font-family: monospace;
+	font-size: calc(1.5 * var(--u));
+	color: var(--grey);
+}
+#info p::selection {
+	background: var(--grey-s);
+}
+#menu-wrapper {
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	left: -100vw;
+	width: 100vw;
+	height: 100dvh;
+	z-index: 50;
+	display: grid;
+	grid-template-columns: auto calc(5 * var(--u));
+	transition: .5s;
+}
+#menu-wrapper #menu {
+	width: 100%;
+	height: 100%;
+	background: #000;
+	box-shadow: 0 0 calc(5 * var(--u)) 0 #000;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+#menu-wrapper #menu .logo {
+	font-size: calc(3 * var(--u));
+	margin: calc(5 * var(--u)) 0;
+	text-align: center;
+}
+#menu-wrapper #menu div {
+	width: 100%;
+	height: max-content;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: calc(1 * var(--u));
+}
+#menu-wrapper #menu div[hidden] {
+	display: none;
+}
+#menu-wrapper #menu input[type="text"], #menu-wrapper #menu input[type="password"], #menu-wrapper #menu button {
+	width: 50%;
+	height: calc(5 * var(--u));
+	box-sizing: border-box;
+	font-family: monospace;
+	font-size: calc(2 * var(--u));
+}
+#menu-wrapper #menu input[type="text"]:focus, #menu-wrapper #menu input[type="password"]:focus, #menu-wrapper #menu button:focus {
+	outline: none;
+	border-color: var(--c);
+}
+#menu-wrapper #menu input[type="text"]::selection, #menu-wrapper #menu input[type="password"]::selection, #menu-wrapper #menu button::selection {
+	background: var(--c);
+}
+#menu-wrapper #menu input[type="text"], #menu-wrapper #menu input[type="password"] {
+	background: var(--fg);
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--br);
+	font-family: monospace;
+	font-size: calc(2 * var(--u));
+	padding-left: calc(1.25 * var(--u));
+	color: #fff;
+}
+#menu-wrapper #menu button {
+	background: var(--fg2);
+	border: var(--border-width) solid var(--border2);
+	border-radius: var(--br);
+	color: #fff;
+}
+#menu-wrapper #menu button:hover {
+	background: var(--fg3);
+}
+#menu-wrapper #menu h1, #menu-wrapper #menu h2, #menu-wrapper #menu p:not(.logo) {
+	width: 50%;
+	box-sizing: border-box;
+	font-family: monospace;
+	font-size: calc(2 * var(--u));
+	margin: 0;
+	text-align: center;
+	color: #fff;
+}
+#menu-wrapper #menu h1::selection, #menu-wrapper #menu h2::selection, #menu-wrapper #menu p:not(.logo)::selection {
+	background: #fff5;
+}
+#menu-wrapper #menu p:not(.logo) {
+	font-size: calc(1.5 * var(--u));
+}
+#menu-wrapper #menu #logout-section h2 {
+	margin: calc(1 * var(--u)) 0 calc(1.25 * var(--u)) 0;
+}
+#menu-wrapper #close-menu {
+	position: relative;
+	width: calc(5 * var(--u));
+	height: calc(5 * var(--u));
+	background: #000;
+	border: none;
+}
+#menu-wrapper #close-menu:focus {
+	outline: none;
+}
+#menu-wrapper #close-menu svg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: calc(2.5 * var(--u));
+	height: calc(2.5 * var(--u));
+	stroke: #fff;
+}
+#menu-wrapper[data-active="1"] {
+	left: 0;
+	pointer-events: auto;
+}
+.lvl4 {
+	background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
+	background-clip: text;
+	color: transparent !important;
+}
+.lvl3 {
+	background: linear-gradient(to bottom, #02d 20%, #0cf);
+	background-clip: text;
+	color: transparent !important;
+}
+.lvl2 {
+	background: linear-gradient(to bottom, #f80 20%, #ff0);
+	background-clip: text;
+	color: transparent !important;
+}
+#chats {
+	position: absolute;
+	top: calc(5.5 * var(--u));
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(100vw - var(--chat-margin) * 2);
+	height: calc(100vh - (16.5 * var(--u)));
+	padding-bottom: calc(1.25 * var(--u));
+	box-sizing: border-box;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+	gap: calc(1.25 * var(--u));
+	scrollbar-width: none;
+}
+#chats::-webkit-scrollbar {
+	display: none;
+}
+#chats:focus {
+	outline: var(--border-width) solid var(--c);
+}
+.chat {
+	width: 100%;
+	height: min-content;
+	box-sizing: border-box;
+	background: var(--fg);
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--br);
+	padding: 0 calc(.7 * var(--u)) calc(.5 * var(--u)) calc(.7 * var(--u));
+}
+.chat div {
+	display: flex;
+	align-items: center;
+	margin: 0;
+	margin-top: calc(.7 * var(--u));
+	gap: calc(.7 * var(--u));
+}
+.chat h1 {
+	font-family: monospace;
+	margin: 0;
+	font-size: calc(1.8 * var(--u));
+	font-weight: 700;
+}
+.chat h2 {
+	font-family: monospace;
+	margin: 0;
+	color: var(--grey);
+	font-size: calc(1.2 * var(--u));
+	font-weight: 700;
+}
+.chat h2::selection {
+	background: var(--grey-s);
+}
+.chat p {
+	margin: 0;
+	margin-top: calc(.7 * var(--u));
+	font-family: Arial;
+	font-size: calc(1.5 * var(--u));
+	font-weight: 500;
+	line-height: calc(2 * var(--u));
+}
+.chat h1, .chat p, .chat span {
+	color: #fff;
+}
+.chat h1::selection, .chat p::selection, .chat span::selection {
+	background: #fff5;
+}
+.chat .mention {
+	padding: var(--border-width);
+	border: var(--border-width) solid var(--border);
+	border-radius: calc(var(--br) / 2);
+}
+.pending {
+	border-color: var(--border2);
+}
+#error {
+	position: absolute;
+	top: calc(5 * var(--u));
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(100% - var(--chat-margin) * 2);
+	height: calc(100% - (16 * var(--u)));
+	box-sizing: border-box;
+	background: var(--fg);
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--br);
+	z-index: 20;
+}
+#error p {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 80%;
+	text-align: center;
+	margin: 0;
+	font-size: calc(4 * var(--u));
+	color: #fff;
+	font-family: monospace;
+}
+#chat-wrapper:has(#error:not([hidden]))::before, #chat-wrapper:has(#error:not([hidden]))::after {
+	height: calc(2 * var(--u));
+	background: #000;
+}
+#bottom {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100vw;
+	height: calc(11 * var(--u));
+	background: #000;
+}
+#top, #bottom {
+	z-index: 10;
+	box-shadow: 0 0 calc(1 * var(--u)) calc(.5 * var(--u)) #000;
+}
+#msg-input {
+	position: absolute;
+	bottom: calc(4 * var(--u));
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(100vw - var(--chat-margin) * 2);
+	height: calc(7 * var(--u));
+	resize: none;
+	border-radius: calc(var(--br) * 2);
+	font-size: calc(2 * var(--u));
+	padding: calc(2.2 * var(--u)) calc(2 * var(--u));
+	box-sizing: border-box;
+	color: #ccc;
+	background: var(--fg);
+	border: var(--border-width) solid var(--border);
+	transition: .4s;
+}
+#msg-input:focus {
+	outline: none;
+	border-color: var(--c);
+}
+#msg-input::selection {
+	background: var(--c);
+	color: #fff;
+}
+.underlined {
+	color: var(--grey);
+	font-family: monospace;
+	font-weight: 500;
+	position: relative;
+	transition: .2s;
+	z-index: 2;
+	text-decoration: none;
+}
+.underline {
+	--widen: 0%;
+	--fix: 0%;
+	width: calc(100% + var(--widen));
+	transform: translateX(calc(-100% + var(--fix)));
+	height: 1px;
+	background: var(--grey);
+	position: absolute;
+	bottom: 0;
+	transition: .2s;
+	z-index: -1;
+}
+.underlined:hover {
+	color: #000;
+}
+.underlined:hover .underline {
+	height: 100%;
+}
+.underlined::selection {
+	background: #fff5;
+}
+.template {
+	display: none;
+}
+#alert {
+	width: 100vw;
+	height: 100dvh;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	background: #0007;
+}
+#alert #alert-box {
+	max-width: 80vw;
+	width: calc(50 * var(--u));
+	box-sizing: border-box;
+	padding: calc(2 * var(--u));
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: var(--fg);
+	border: var(--border-width) solid var(--border);
+	border-radius: calc(var(--br) * 2);
+}
+#alert #alert-box #alert-text {
+	margin: 0;
+	text-align: center;
+	font-size: calc(3 * var(--u));
+	font-weight: 500;
+	font-family: Arial;
+	color: #fff;
+}
+#alert #alert-box #alert-options {
+	display: flex;
+	width: 100%;
+	margin-top: calc(2 * var(--u));
+	gap: calc(.5 * var(--u));
+}
+#alert #alert-box #alert-options button {
+	width: 100%;
+	height: calc(4 * var(--u));
+	background: var(--fg2);
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--br);
+	font-size: calc(1.5 * var(--u));
+	font-weight: 500;
+	font-family: monospace;
+	color: #fff;
+}
+#alert #alert-box #alert-options button:hover {
+	background: var(--fg3);
+}
+#alert #alert-box #alert-options button:focus {
+	outline: none;
+	border-color: var(--border2);
+}
+#alert #alert-box #alert-options button::selection {
+	background: var(--c);
+}
+#alert #alert-box #alert-options button.action {
+	background: var(--action);
+	border-color: var(--action3);
+}
+#alert #alert-box #alert-options button.action:hover {
+	background: var(--action2);
+}
+#alert #alert-box #alert-options button.action:focus {
+	border-color: var(--c);
+}
+@media only screen and (min-aspect-ratio: 3/4) {
+	:root {
+		--u: 1.2vh;
+	}
+}
+@media only screen and (min-aspect-ratio: 1/1) {
+	#menu-wrapper {
+		left: -80vh;
+		grid-template-columns: calc(80vh - (5 * var(--u))) calc(5 * var(--u));
+	}
+}
+@media only screen and (min-width: 100vh) {
+	#search {
+		width: 80vw;
+	}
+	#results {
+		width: calc(80vw - (3.5 * var(--u)));
+	}
+}
 	</style>
 </head>
 <body>
@@ -601,7 +494,7 @@
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b>Q</b>Chat <span class="version">v1.4</span></p>
+		<p class="logo"><b>Q</b>Chat <span class="version">v1.5</span></p>
 		<p id="channel"></p>
 	</div>
 	
@@ -1006,7 +899,6 @@
 						showError();
 						data.chat.forEach(c => addChat(...c));
 						removePending();
-						chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
 					} else showError('Client Error:', data.error);
 				})
 				.catch(e => showError('Network Error:', e));
