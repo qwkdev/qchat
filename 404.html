@@ -303,23 +303,48 @@ body {
 	border-color: var(--border2);
 }
 
-/* #new {
-	width: max-content;
+#new {
+	display: flex;
+	align-items: center;
+
+	gap: calc(.4 * var(--u));
+	padding-left: calc(.7 * var(--u));
+
 	box-sizing: border-box;
 	background: var(--fg);
 	border: var(--border-width) solid var(--border);
 	border-radius: var(--br);
 	position: absolute;
-	bottom: 15vh;
-	right: 5vw;
+	bottom: calc(12.25 * var(--u));
+	right: calc(1 * var(--u));
 
+	box-shadow: 0 0 calc(1 * var(--u)) calc(-.5 * var(--u)) #000;
+	transition: .2s;
 	z-index: 10;
 
 	p {
 		color: #fff;
 		font-family: Arial;
+		margin: calc(.5 * var(--u)) 0;
+		font-size: calc(2 * var(--u));
 	}
-} */
+	svg {
+		width: calc(2 * var(--u));
+		height: calc(2 * var(--u));
+
+		path {
+			stroke: #fff;
+		}
+	}
+	&:hover {
+		background: var(--fg2);
+		border: var(--border-width) solid var(--border2);
+		transform: scale(1.03);
+	}
+	&[hidden] {
+		display: none;
+	}
+}
 
 #error {
 	position: absolute;
@@ -513,7 +538,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b>Q</b>Chat <span class="version">v1.5</span></p>
+		<p class="logo"><b>Q</b>Chat <span class="version">v1.6</span></p>
 		<p id="channel"></p>
 	</div>
 	
@@ -552,9 +577,10 @@ body {
 		</div>
 	</div>
 
-	<!-- <button id="new">
-		<p>1 New</p>
-	</button> -->
+	<button id="new" onclick="scrollBottom()" hidden>
+		<p>New</p>
+		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M12 6V18M12 18L7 13M12 18L17 13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+	</button>
 
 	<div id="error" hidden>
 		<p></p>
@@ -692,6 +718,10 @@ body {
 		const chat = document.getElementById('chats');
 		const chatTemplate = document.querySelector('.chat.template');
 
+		function scrollBottom() {
+			chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+		}
+
 		function parseEpoch(epoch) {
 			if (epoch === 0) return '';
 
@@ -749,6 +779,23 @@ body {
 				.map(e => parseInt(e.dataset.id)).at(-1) || -1;
 		}
 
+		const newChatsBtn = document.getElementById('new');
+		const newChatsText = newChatsBtn.querySelector('p');
+		let newChats = 0;
+		const observer = new IntersectionObserver(t => {
+			t.forEach(e => {
+				if (e.isIntersecting) {
+					newChats--;
+					if (newChats < 0) newChats = 0;
+					newChatsBtn.hidden = newChats == 0;
+					observer.unobserve(e.target);
+				}
+			});
+		}, {
+			root: null,
+			threshold: 0.5
+		});
+
 		const bottomError = 10; // px
 		function addChat(msgId, epoch, level, user, parts, init=false, pending=false) {
 			if (!pending && checkExists(msgId)) return;
@@ -800,20 +847,24 @@ body {
 					const eId = parseInt(e.dataset.id);
 					if (!eId || msgId > eId) {
 						chat.insertBefore(newChat, e.nextSibling);
+						if (scrollPrompt && !atBottom) {
+							newChats++;
+							newChatsBtn.hidden = false;
+							newChatsText.innerText = `${newChats} New`;
+							observer.observe(newChat);
+						}
 						break;
 					}
 				}
 
-				if (atBottom) {
-					chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
-				}
+				if (atBottom) scrollBottom();
 			}
 		}
 
 		function addPending(message, level, user) {
 			const parts = message.split('\n').flatMap((e, i, a) => i < a.length - 1 ? [e, {'type': 'newline'}] : [e]);
 			addChat(0, new Date().getTime() / 1000, level, user.startsWith('@') ? user.slice(1) : user, parts, true, true);
-			chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+			scrollBottom();
 		}
 		function removePending() {
 			Array.from(chat.querySelectorAll('.chat.pending')).forEach(e => e.remove());
@@ -903,6 +954,25 @@ body {
 			}
 		});
 
+		menuEle.user.addEventListener('keydown', e => {
+			if (e.key === 'Enter') {
+				if (e.shiftKey) return;
+				else {
+					e.preventDefault();
+					menuEle.password.focus();
+				}
+			}
+		});
+		menuEle.password.addEventListener('keydown', e => {
+			if (e.key === 'Enter') {
+				if (e.shiftKey) return;
+				else {
+					e.preventDefault();
+					login();
+				}
+			}
+		});
+
 		async function sync() {
 			const user = getUser(false);
 			const latest = getLatest();
@@ -965,8 +1035,11 @@ body {
 			}
 		});
 
-		chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
-		sync().then(() => chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' }));
+		let scrollPrompt = false;
+		sync().then(() => { 
+			scrollBottom();
+			scrollPrompt = true;
+		});
 		startSync();
 	</script>
 </body>
