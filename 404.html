@@ -538,7 +538,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b>Q</b>Chat <span class="version">v1.6</span></p>
+		<p class="logo"><b>Q</b>Chat <span class="version">v1.7</span></p>
 		<p id="channel"></p>
 	</div>
 	
@@ -797,10 +797,8 @@ body {
 		});
 
 		const bottomError = 10; // px
-		function addChat(msgId, epoch, level, user, parts, init=false, pending=false) {
+		function addChat(atBottom, msgId, epoch, level, user, parts, init=false, pending=false) {
 			if (!pending && checkExists(msgId)) return;
-
-			const atBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < bottomError;
 
 			const newChat = chatTemplate.cloneNode(true);
 			newChat.classList.remove('template');
@@ -863,7 +861,7 @@ body {
 
 		function addPending(message, level, user) {
 			const parts = message.split('\n').flatMap((e, i, a) => i < a.length - 1 ? [e, {'type': 'newline'}] : [e]);
-			addChat(0, new Date().getTime() / 1000, level, user.startsWith('@') ? user.slice(1) : user, parts, true, true);
+			addChat(true, 0, new Date().getTime() / 1000, level, user.startsWith('@') ? user.slice(1) : user, parts, true, true);
 			scrollBottom();
 		}
 		function removePending() {
@@ -988,7 +986,11 @@ body {
 				.then(data => {
 					if (data.success === true) {
 						showError();
-						data.chat.forEach(c => addChat(...c));
+						const atBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < bottomError;
+						data.chat.forEach(c => addChat(
+							atBottom,
+							...c
+						));
 						removePending();
 					} else showError('Client Error:', data.error);
 				})
