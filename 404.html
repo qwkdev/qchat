@@ -76,7 +76,9 @@ body {
 .logo b {
 	background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
 	background-clip: text;
-	color: transparent;
+	-webkit-background-clip: text;
+	color: transparent !important;
+	-webkit-text-fill-color: transparent !important;
 }
 .logo .version {
 	color: var(--grey);
@@ -107,7 +109,7 @@ body {
 	top: 0;
 	left: -100vw;
 	width: 100vw;
-	height: 100dvh;
+	height: 100vh;
 	z-index: 50;
 	display: grid;
 	grid-template-columns: auto calc(5 * var(--u));
@@ -214,17 +216,23 @@ body {
 .lvl4 {
 	background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
 	background-clip: text;
+	-webkit-background-clip: text;
 	color: transparent !important;
+	-webkit-text-fill-color: transparent !important;
 }
 .lvl3 {
 	background: linear-gradient(to bottom, #02d 20%, #0cf);
 	background-clip: text;
+	-webkit-background-clip: text;
 	color: transparent !important;
+	-webkit-text-fill-color: transparent !important;
 }
 .lvl2 {
 	background: linear-gradient(to bottom, #f80 20%, #ff0);
 	background-clip: text;
+	-webkit-background-clip: text;
 	color: transparent !important;
+	-webkit-text-fill-color: transparent !important;
 }
 #chats {
 	position: absolute;
@@ -233,6 +241,7 @@ body {
 	transform: translateX(-50%);
 	width: calc(100vw - var(--chat-margin) * 2);
 	height: calc(100vh - (16.5 * var(--u)));
+	height: calc(100dvh - (16.5 * var(--u)));
 	padding-bottom: calc(1.25 * var(--u));
 	box-sizing: border-box;
 	overflow-x: hidden;
@@ -306,10 +315,8 @@ body {
 #new {
 	display: flex;
 	align-items: center;
-
 	gap: calc(.4 * var(--u));
 	padding-left: calc(.7 * var(--u));
-
 	box-sizing: border-box;
 	background: var(--fg);
 	border: var(--border-width) solid var(--border);
@@ -317,33 +324,30 @@ body {
 	position: absolute;
 	bottom: calc(12.25 * var(--u));
 	right: calc(1 * var(--u));
-
 	box-shadow: 0 0 calc(1 * var(--u)) calc(-.5 * var(--u)) #000;
 	transition: .2s;
 	z-index: 10;
-
-	p {
-		color: #fff;
-		font-family: Arial;
-		margin: calc(.5 * var(--u)) 0;
-		font-size: calc(2 * var(--u));
-	}
-	svg {
-		width: calc(2 * var(--u));
-		height: calc(2 * var(--u));
-
-		path {
-			stroke: #fff;
-		}
-	}
-	&:hover {
-		background: var(--fg2);
-		border: var(--border-width) solid var(--border2);
-		transform: scale(1.03);
-	}
-	&[hidden] {
-		display: none;
-	}
+}
+#new p {
+	color: #fff;
+	font-family: Arial;
+	margin: calc(.5 * var(--u)) 0;
+	font-size: calc(2 * var(--u));
+}
+#new svg {
+	width: calc(2 * var(--u));
+	height: calc(2 * var(--u));
+}
+#new svg path {
+	stroke: #fff;
+}
+#new:hover {
+	background: var(--fg2);
+	border: var(--border-width) solid var(--border2);
+	transform: scale(1.03);
+}
+#new[hidden] {
+	display: none;
 }
 
 #error {
@@ -447,6 +451,7 @@ body {
 }
 #alert {
 	width: 100vw;
+	height: 100vh;
 	height: 100dvh;
 	position: absolute;
 	top: 0;
@@ -538,7 +543,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b>Q</b>Chat <span class="version">v1.7</span></p>
+		<p class="logo"><b>Q</b>Chat <span class="version">v1.8</span></p>
 		<p id="channel"></p>
 	</div>
 	
