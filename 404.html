@@ -29,6 +29,36 @@ body {
 	background: #000;
 	overflow: hidden;
 }
+.btn {
+	--btn-h: var(--h);
+	--btn-s: var(--s);
+	--btn-l: var(--l);
+	--border: calc(.15 * var(--u));
+
+	box-sizing: border-box;
+	font-family: monospace;
+	font-size: calc(2 * var(--u));
+	color: #fff;
+
+	background: hsl(var(--btn-h), calc(83% * var(--btn-s)), calc(57% * var(--btn-l)));
+	border: var(--border) solid hsl(var(--btn-h), calc(70% * var(--btn-s)), calc(48% * var(--btn-l)));
+	border-radius: var(--br);
+	box-shadow:
+		0 calc(var(--border)/2) calc(var(--border)/2) var(--border) hsla(var(--btn-h), calc(72% * var(--btn-s)), calc(30% * var(--btn-l)), 0.2),
+		inset 0 calc(-1 * var(--border)) var(--border) 0 hsl(var(--btn-h), calc(70% * var(--btn-s)), calc(48% * var(--btn-l))),
+		inset 0 0 0 var(--border) hsl(var(--btn-h), calc(92% * var(--btn-s)), calc(62% * var(--btn-l)));
+
+	transition: .2s;
+}
+.btn:hover {
+	--btn-l: calc(var(--l) * 1.05);
+}
+.btn:focus {
+	outline: none;
+}
+.btn::selection {
+	background: var(--c);
+}
 #top {
 	position: absolute;
 	top: 0;
@@ -58,13 +88,26 @@ body {
 	height: calc(2.5 * var(--u));
 	stroke: #fff;
 }
+#top .right {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	gap: calc(1.2 * var(--chat-margin));
+}
 #top #channel {
 	user-select: none;
 	margin: 0;
-	margin-left: auto;
 	font-family: monospace;
 	font-size: calc(2.5 * var(--u));
 	color: var(--grey);
+}
+#top p.mod {
+	user-select: none;
+	margin: 0;
+	font-family: monospace;
+	color: #fff;
+	font-size: calc(2.5 * var(--u));
+	font-weight: 700;
 }
 .logo {
 	user-select: none;
@@ -74,11 +117,7 @@ body {
 	font-size: calc(2.5 * var(--u));
 }
 .logo b {
-	background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent !important;
-	-webkit-text-fill-color: transparent !important;
+	font-weight: 700;
 }
 .logo .version {
 	color: var(--grey);
@@ -308,10 +347,33 @@ body {
 	border: var(--border-width) solid var(--border);
 	border-radius: calc(var(--br) / 2);
 }
+.chat .mod {
+	margin: 0;
+	margin-left: auto;
+}
+.chat .mod button {
+	position: relative;
+	background: transparent;
+	border: none;
+	width: calc(1.5 * var(--u));
+	height: calc(1.5 * var(--u));
+	padding: 0;
+}
+.chat .mod button:focus {
+	outline: none;
+}
+.chat .mod button svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: calc(1.5 * var(--u));
+	height: calc(1.5 * var(--u));
+	stroke: #fff;
+	stroke-width: 2px;
+}
 .pending {
 	border-color: var(--border2);
 }
-
 #new {
 	display: flex;
 	align-items: center;
@@ -485,37 +547,25 @@ body {
 	width: 100%;
 	margin-top: calc(2 * var(--u));
 	gap: calc(.5 * var(--u));
+
+	align-items: center;
+	justify-content: center;
 }
 #alert #alert-box #alert-options button {
 	width: 100%;
 	height: calc(4 * var(--u));
-	background: var(--fg2);
-	border: var(--border-width) solid var(--border);
-	border-radius: var(--br);
-	font-size: calc(1.5 * var(--u));
-	font-weight: 500;
-	font-family: monospace;
-	color: #fff;
-}
-#alert #alert-box #alert-options button:hover {
-	background: var(--fg3);
-}
-#alert #alert-box #alert-options button:focus {
-	outline: none;
-	border-color: var(--border2);
-}
-#alert #alert-box #alert-options button::selection {
-	background: var(--c);
+
+	--h: 0;
+	--s: 0;
+	--l: .4;
 }
 #alert #alert-box #alert-options button.action {
-	background: var(--action);
-	border-color: var(--action3);
+	--h: 250;
+	--s: 1;
+	--l: 1;
 }
-#alert #alert-box #alert-options button.action:hover {
-	background: var(--action2);
-}
-#alert #alert-box #alert-options button.action:focus {
-	border-color: var(--c);
+.mod[hidden] {
+	display: none !important;
 }
 @media only screen and (min-aspect-ratio: 3/4) {
 	:root {
@@ -543,13 +593,15 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b>Q</b>Chat <span class="version">v1.8</span></p>
-		<p id="channel"></p>
+		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.3.1</span></p>
+		<div class="right">
+			<p class="mod lvl3" hidden>MOD</p>
+			<p id="channel"></p>
+		</div>
 	</div>
-	
 	<div id="menu-wrapper" data-active="0">
 		<div id="menu">
-			<p class="logo"><b>Q</b>Chat</p>
+			<p class="logo"><b class="lvl4">Q</b>Chat</p>
 
 			<div id="login-section">
 				<p>Enter display name:</p>
@@ -577,6 +629,11 @@ body {
 			<div>
 				<h1></h1>
 				<h2></h2>
+				<div class="mod" hidden>
+					<button class="mod-delete" onclick="modDelete(this)">
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M6 6L18 18M18 6L6 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+					</button>
+				</div>
 			</div>
 			<p></p>
 		</div>
@@ -595,8 +652,8 @@ body {
 		<div id="alert-box">
 			<p id="alert-text">Example</p>
 			<div id="alert-options">
-				<button id="alert-cancel">CANCEL</button>
-				<button class="action" id="alert-ok">OK</button>
+				<button class="btn" id="alert-cancel">CANCEL</button>
+				<button class="btn action" id="alert-ok">OK</button>
 			</div>
 		</div>
 	</dialog>
@@ -651,6 +708,9 @@ body {
 				menuEle.loggedin.innerText = parseUser(session.user, session.level);
 				menuEle.loggedin.className = `lvl${Number(session.level) || 0}`;
 			}
+
+			const modHidden = !session.user || session.level < 3;
+			document.querySelectorAll('.mod').forEach(e => e.hidden = modHidden);
 		}
 		async function login() {
 			if (!menuEle.user.value || !menuEle.password.value) return;
@@ -783,6 +843,38 @@ body {
 			return Array.from(chat.querySelectorAll('.chat:not(.template)'))
 				.map(e => parseInt(e.dataset.id)).at(-1) || -1;
 		}
+
+		/////
+
+		function modDelete(btn) {
+			const msg = parseInt(btn.parentElement.parentElement.parentElement.dataset.id);
+			if (Number.isNaN(msg)) return;
+
+			showAlert('Confirm deletion', () => modSendDelete(msg), true);
+		}
+		async function modSendDelete(msg) {
+			const user = getUser(true);
+			await fetch(`${SERVER}/mod/delete/${CHANNEL}`, {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ msg, user })
+			})
+				.then(resp => resp.json())
+				.then(data => {
+					if (data.success !== true) {
+						showError('Client Error:', data.error);
+					} else {
+						chat.querySelectorAll('.chat:not(.template)').forEach(e => e.remove());
+						sync();
+					}
+				})
+				.catch(e => showError('Network Error:', e));
+		}
+
+		/////
 
 		const newChatsBtn = document.getElementById('new');
 		const newChatsText = newChatsBtn.querySelector('p');

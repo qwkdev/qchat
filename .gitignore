@@ -1,6 +1,7 @@
 __pycache__/
 venv/
-users.json
 .vscode/
 admin/
 old/
+*.json
+*.py
