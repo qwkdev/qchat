@@ -412,6 +412,196 @@ body {
 	display: none;
 }
 
+/* --- */
+
+#main {
+	position: absolute;
+	top: calc(5.5 * var(--u));
+	left: 50%;
+	transform: translateX(-50%);
+
+	width: 100vw;
+	height: calc(100vh - (9.5 * var(--u)));
+	height: calc(100dvh - (9.5 * var(--u)));
+
+	z-index: 10;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: calc(1 * var(--u));
+
+	#select {
+		width: calc(100% - var(--chat-margin) * 2);
+		height: calc(5 * var(--u));
+		
+		display: grid;
+		align-items: center;
+		grid-template-columns: 1fr 1fr;
+
+		position: relative;
+		box-sizing: border-box;
+
+		button {
+			flex-grow: 1;
+			height: 100%;
+
+			background: transparent;
+			border: none;
+
+			margin: 0;
+			font-size: calc(2 * var(--u));
+			font-family: monospace;
+			color: #fff;
+			font-weight: 500;
+		}
+		#active {
+			position: absolute;
+			top: 0;
+			left: 0;
+
+			width: 50%;
+			height: calc(5 * var(--u));
+			box-sizing: border-box;
+
+			background: var(--fg);
+			border: var(--border-width) solid var(--border);
+			border-radius: var(--br);
+
+			z-index: -1;
+			transition: .5s;
+		}
+	}
+	#lists {
+		position: absolute;
+		top: calc(6.25 * var(--u));
+		left: 0;
+		width: 200vw;
+		display: flex;
+		transition: .5s;
+	}
+	#users, #channels {
+		width: 100vw;
+		padding: 0 var(--chat-margin);
+		height: 100%;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		display: flex;
+		flex-direction: column;
+		gap: calc(1.25 * var(--u));
+		scrollbar-width: none;
+
+		padding-bottom: calc(1 * var(--u));
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+	.item {
+		width: 100%;
+		box-sizing: border-box;
+		background: var(--fg);
+		border: var(--border-width) solid var(--border);
+		border-radius: var(--br);
+
+		display: flex;
+		align-items: center;
+
+		padding: calc(.5 * var(--u)) calc(1 * var(--u));
+		gap: calc(.5 * var(--u));
+
+		.div {
+			flex-grow: 1;
+		}
+		h1, h2, h3, p, .btn, span {
+			margin: 0;
+			font-size: calc(1.5 * var(--u));
+			font-family: monospace;
+			color: #fff;
+			font-weight: 500;
+		}
+		span {
+			color: var(--border);
+		}
+		button {
+			height: 100%;
+			padding: calc(.5 * var(--u)) calc(1 * var(--u));
+		}
+		.action {
+			--h: 250;
+			--s: 1;
+			--l: 1;
+		}
+		.action1 {
+			--h: 135;
+			--s: .7;
+			--l: .8;
+		}
+		.action2 {
+			--h: 0;
+			--s: .8;
+			--l: .5;
+		}
+		.num {
+			display: flex;
+			align-items: center;
+			height: 100%;
+			gap: calc(.75 * var(--u));
+
+			p {
+				font-size: calc(1.75 * var(--u));
+			}
+			.btn {
+				--h: 0;
+				--s: 0;
+				--l: .6;
+			}
+			button {
+				padding: 0;
+				padding-bottom: calc(.15 * var(--u));
+				width: calc(2.5 * var(--u));
+				height: calc(2.5 * var(--u));
+			}
+		}
+		.new {
+			padding: 0 calc(2 * var(--u));
+			padding-bottom: calc(.15 * var(--u));
+			/* width: calc(5 * var(--u)); */
+			height: calc(3 * var(--u));
+		}
+	}
+	#users h1 {
+		width: 16ch;
+	}
+	#channels h1 {
+		width: 17ch;
+	}
+
+	&[data-list="0"] #active, &[data-list="0"] #lists {
+		transform: translateX(0);
+	}
+	&[data-list="1"] #active {
+		transform: translateX(100%);
+	}
+	&[data-list="1"] #lists {
+		transform: translateX(-50%);
+	}
+}
+#bottom {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100vw;
+	height: calc(4 * var(--u));
+	background: #000;
+}
+
+.template {
+	display: none !important;
+}
+
+/* --- */
+
 #error {
 	position: absolute;
 	top: calc(5 * var(--u));
@@ -439,14 +629,6 @@ body {
 }
 #chat-wrapper:has(#error:not([hidden]))::before, #chat-wrapper:has(#error:not([hidden]))::after {
 	height: calc(2 * var(--u));
-	background: #000;
-}
-#bottom {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100vw;
-	height: calc(11 * var(--u));
 	background: #000;
 }
 #top, #bottom {
@@ -542,6 +724,47 @@ body {
 	font-family: Arial;
 	color: #fff;
 }
+#alert #alert-box #alert-input {
+	width: 100%;
+	margin-top: calc(2 * var(--u));
+	display: grid;
+	grid-template-columns: auto auto;
+	align-items: center;
+	gap: calc(1 * var(--u));
+
+	p {
+		margin: 0;
+		font-size: calc(2 * var(--u));
+		font-weight: 500;
+		font-family: Arial;
+		color: #fff;
+	}
+	&[hidden] {
+		display: none;
+	}
+}
+#alert #alert-box input {
+	width: 100%;
+	height: calc(5 * var(--u));
+	box-sizing: border-box;
+	padding-left: calc(1.25 * var(--u));
+	
+	background: var(--fg);
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--br);
+
+	font-family: monospace;
+	font-size: calc(2 * var(--u));
+	color: #fff;
+
+	&:focus {
+		outline: none;
+		border-color: var(--c);
+	}
+	&::selection {
+		background: var(--c);
+	}
+}
 #alert #alert-box #alert-options {
 	display: flex;
 	width: 100%;
@@ -586,6 +809,17 @@ body {
 		width: calc(80vw - (3.5 * var(--u)));
 	}
 }
+
+@media only screen and (max-aspect-ratio: 1/1) {
+	#main #channels .num {
+		display: grid;
+		grid-template-columns: repeat(4, auto);
+		row-gap: calc(.5 * var(--u));
+	}
+	#main #channels .num span {
+		display: none;
+	}
+}
 	</style>
 </head>
 <body>
@@ -593,10 +827,9 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.3.1</span></p>
+		<p class="logo"><b class="lvl4">Q</b>Chat</p>
 		<div class="right">
-			<p class="mod lvl3" hidden>MOD</p>
-			<p id="channel"></p>
+			<p id="channel">[admin]</p>
 		</div>
 	</div>
 	<div id="menu-wrapper" data-active="0">
@@ -604,11 +837,6 @@ body {
 			<p class="logo"><b class="lvl4">Q</b>Chat</p>
 
 			<div id="login-section">
-				<p>Enter display name:</p>
-				<input type="text" placeholder="Name" id="login-display" oninput="format(this)">
-				
-				<p>OR</p>
-
 				<input type="text" placeholder="Username" id="login-user" oninput="format(this)">
 				<input type="password" placeholder="Password" id="login-password">
 				<button onclick="login()">Login</button>
@@ -623,26 +851,70 @@ body {
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M15 6L9 12L15 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
 	</div>
-	
-	<div id="chats">
-		<div class="chat template">
-			<div>
-				<h1></h1>
-				<h2></h2>
-				<div class="mod" hidden>
-					<button class="mod-delete" onclick="modDelete(this)">
-						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M6 6L18 18M18 6L6 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
-					</button>
+
+	<div id="main" data-list="0">
+		<div id="select">
+			<div id="active"></div>
+			<button onclick="list(0)">Users</button>
+			<button onclick="list(1)">Channels</button>
+		</div>
+		<div id="lists">
+			<div id="users">
+				<div class="init item">
+					<div class="div"></div>
+					<button class="btn action new" onclick="euNew()">Create New</button>
+					<div class="div"></div>
+				</div>
+				<div class="init item template">
+					<h1></h2>
+					<span>|</span>
+					<div class="num">
+						<button class="btn" onclick="euLevel(this, -1)">-</button>
+						<p></p>
+						<button class="btn" onclick="euLevel(this, 1)">+</button>
+					</div>
+					<span>|</span>
+					<h2></h2>
+					<span>|</span>
+					<div class="div"></div>
+					<span>|</span>
+					<button class="btn action2" onclick="euLogout(this)">RS</button>
+					<button class="btn action" onclick="euPassword(this)">&Delta;PW</button>
+					<button class="btn action2" onclick="euDelete(this)">Del</button>
 				</div>
 			</div>
-			<p></p>
+			<div id="channels">
+				<div class="init item">
+					<div class="div"></div>
+					<button class="btn action new" onclick="ecNew()">Create New</button>
+					<div class="div"></div>
+				</div>
+				<div class="init item template">
+					<h1></h2>
+					<span>|</span>
+					<div class="num">
+						<h3>R</h3>
+						<button class="btn" onclick="ecLevel(this, 0, -1)">-</button>
+						<p data-name="read"></p>
+						<button class="btn" onclick="ecLevel(this, 0, 1)">+</button>
+						<span>|</span>
+						<h3>W</h3>
+						<button class="btn" onclick="ecLevel(this, 1, -1)">-</button>
+						<p data-name="write"></p>
+						<button class="btn" onclick="ecLevel(this, 1, 1)">+</button>
+					</div>
+					<span>|</span>
+					<h2></h2>
+					<span>|</span>
+					<div class="div"></div>
+					<span>|</span>
+					<button class="btn action2" data-name="filter" data-value="" onclick="ecFilter(this)">F</button>
+					<button class="btn action2" onclick="ecNuke(this)">[]</button>
+					<button class="btn action2" onclick="ecDelete(this)">Del</button>
+				</div>
+			</div>
 		</div>
 	</div>
-
-	<button id="new" onclick="scrollBottom()" hidden>
-		<p>New</p>
-		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M12 6V18M12 18L7 13M12 18L17 13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
-	</button>
 
 	<div id="error" hidden>
 		<p></p>
@@ -651,6 +923,7 @@ body {
 	<dialog id="alert">
 		<div id="alert-box">
 			<p id="alert-text">Example</p>
+			<div id="alert-input" hidden></div>
 			<div id="alert-options">
 				<button class="btn" id="alert-cancel">CANCEL</button>
 				<button class="btn action" id="alert-ok">OK</button>
@@ -659,8 +932,6 @@ body {
 	</dialog>
 
 	<div id="bottom">
-		<textarea id="msg-input" placeholder="Loading..."></textarea>
-
 		<div id="info">
 			<p>qchat.lol</p>
 			<p>Made by <span><a class="underlined" href="https://qwkdev.github.io/" target="_blank" aria-label="label">qwk<span class="underline" style="--widen: 5%; --fix: 1%;"></span></a></span></p>
@@ -668,478 +939,7 @@ body {
 	</div>
 
 	<script>
-		const MAX_NAME_LENGTH = 16;
-		function safeText(text) {
-			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, MAX_NAME_LENGTH);
-		}
-
-		const CHANNEL = safeText(window.location.pathname.slice(1)) || 'main';
-		const SERVER = 'https://qchat.pythonanywhere.com';
-
-		let session = {
-			user: null,
-			level: 0
-		}
-
-		const loginSection = document.getElementById('login-section');
-		const menuEle = {
-			display: document.getElementById('login-display'),
-			user: document.getElementById('login-user'),
-			password: document.getElementById('login-password'),
-			loggedin: document.getElementById('logged-in')
-		}
-		const logoutSection = document.getElementById('logout-section');
-
-		function format(e) {
-			e.value = safeText(e.value);
-		}
-
-		function fixMenuSections() {
-			if (!session.user) {
-				loginSection.hidden = false;
-				logoutSection.hidden = true;
-
-				menuEle.user.value = '';
-				menuEle.password.value = '';
-			} else {
-				loginSection.hidden = true;
-				logoutSection.hidden = false;
-
-				menuEle.loggedin.innerText = parseUser(session.user, session.level);
-				menuEle.loggedin.className = `lvl${Number(session.level) || 0}`;
-			}
-
-			const modHidden = !session.user || session.level < 3;
-			document.querySelectorAll('.mod').forEach(e => e.hidden = modHidden);
-		}
-		async function login() {
-			if (!menuEle.user.value || !menuEle.password.value) return;
-
-			format(menuEle.user);
-
-			await fetch(`${SERVER}/login`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					user: menuEle.user.value.startsWith('@') ? menuEle.user.value : '@' + menuEle.user.value,
-					password: menuEle.password.value
-				})
-			})
-				.then(resp => resp.json())
-				.then(data => {
-					if (data.success === true) {
-						session.user = data.user || null;
-						session.level = data.level || 0;
-						
-						menuEle.password.value = '';
-						fixMenuSections();
-					} else showError('Client Error:', data.error);
-				})
-				.catch(e => showError('Network Error:', e));
-		}
-		async function logout() {
-			await fetch(`${SERVER}/logout`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					user: getUser()
-				})
-			})
-				.then(resp => resp.json())
-				.then(data => {
-					if (data.success === true) {
-						session.user = null;
-						session.level = 0;
-
-						fixMenuSections();
-					} else showError('Client Error:', data.error);
-				})
-				.catch(e => showError('Network Error:', e));
-		}
-
-		function parseChannel(channel) {
-			if (
-				!channel.startsWith('~') &&
-				!channel.startsWith('^')
-			) {
-				return `#${channel}`;
-			} else return channel;
-		}
-
-		const channelName = parseChannel(CHANNEL);
-		document.getElementById('channel').innerText = channelName;
-
-		const msgInput = document.getElementById('msg-input');
-		msgInput.placeholder = `Message ${channelName}`;
-
-		const errorWall = document.getElementById('error');
-
-		const chat = document.getElementById('chats');
-		const chatTemplate = document.querySelector('.chat.template');
-
-		function scrollBottom() {
-			chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
-		}
-
-		function parseEpoch(epoch) {
-			if (epoch === 0) return '';
-
-			const date = new Date( epoch*1000 );
-			const now = new Date();
-			const isToday =
-				date.getDate() === now.getDate() &&
-				date.getMonth() === now.getMonth() &&
-				date.getFullYear() === now.getFullYear();
-
-			const hours = String(date.getHours()).padStart(2, '0');
-			const minutes = String(date.getMinutes()).padStart(2, '0');
-
-			if (isToday) {
-				return `${hours}:${minutes}`;
-			} else {
-				const day = String(date.getDate()).padStart(2, '0');
-				const month = String(date.getMonth() + 1).padStart(2, '0');
-				return `${hours}:${minutes} ${day}/${month}`;
-			}
-		}
-
-		function parseUser(user, level) {
-			if (level === 0) return user;
-			// else if (level === 4) return `[${user}]`;
-			else return `@${user}`;
-
-			// switch (level) {
-			// 	case 0: return user;
-			// 	case 1: return `@${user}`;
-			// 	case 2: return `;${user}`;
-			// 	case 3: return `^${user}`;
-			// 	case 4: return `[${user}]`;
-			// 	default: return user;
-			// }
-		}
-		function getUser(force=false) {
-			const resp = session.user ? parseUser(session.user, session.level) : (menuEle.display.value || '')
-
-			if (force && !resp) {
-				burger(1);
-				menuEle.display.focus();
-				showAlert('Please enter a display name to chat');
-			} else return resp;
-		}
-
-		function checkExists(msgId) {
-			for (const e of chat.querySelectorAll('.chat:not(.template)')) {
-				if (msgId === parseInt(e.dataset.id)) return true;
-			}
-			return false;
-		}
-		function getLatest() {
-			return Array.from(chat.querySelectorAll('.chat:not(.template)'))
-				.map(e => parseInt(e.dataset.id)).at(-1) || -1;
-		}
-
-		/////
-
-		function modDelete(btn) {
-			const msg = parseInt(btn.parentElement.parentElement.parentElement.dataset.id);
-			if (Number.isNaN(msg)) return;
-
-			showAlert('Confirm deletion', () => modSendDelete(msg), true);
-		}
-		async function modSendDelete(msg) {
-			const user = getUser(true);
-			await fetch(`${SERVER}/mod/delete/${CHANNEL}`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ msg, user })
-			})
-				.then(resp => resp.json())
-				.then(data => {
-					if (data.success !== true) {
-						showError('Client Error:', data.error);
-					} else {
-						chat.querySelectorAll('.chat:not(.template)').forEach(e => e.remove());
-						sync();
-					}
-				})
-				.catch(e => showError('Network Error:', e));
-		}
-
-		/////
-
-		const newChatsBtn = document.getElementById('new');
-		const newChatsText = newChatsBtn.querySelector('p');
-		let newChats = 0;
-		const observer = new IntersectionObserver(t => {
-			t.forEach(e => {
-				if (e.isIntersecting) {
-					newChats--;
-					if (newChats < 0) newChats = 0;
-					newChatsBtn.hidden = newChats == 0;
-					observer.unobserve(e.target);
-				}
-			});
-		}, {
-			root: null,
-			threshold: 0.5
-		});
-
-		const bottomError = 10; // px
-		function addChat(atBottom, msgId, epoch, level, user, parts, init=false, pending=false) {
-			if (!pending && checkExists(msgId)) return;
-
-			const newChat = chatTemplate.cloneNode(true);
-			newChat.classList.remove('template');
-
-			const newUsername = newChat.querySelector('h1');
-			const newDate = newChat.querySelector('h2');
-			if (!user) {
-				if (epoch === 0) newChat.querySelector('div').remove();
-				else {
-					newUsername.remove();
-					newDate.innerText = parseEpoch(epoch);
-				}
-			} else {
-				newUsername.innerText = parseUser(user, level);
-				newUsername.classList = `lvl${level}`;
-				newDate.innerText = parseEpoch(epoch);
-			}
-
-			const text = newChat.querySelector('p');
-			parts.forEach(part => {
-				if (typeof part === 'string') {
-					text.append(document.createTextNode(part));
-				} else {
-					if (part.type === 'newline') {
-						text.append(document.createElement('br'));
-					} else if (part.type === 'mention') {
-						const newMention = document.createElement('span');
-						newMention.classList = `mention lvl${part.level}`;
-						newMention.innerText = part.value;
-						text.append(newMention);
-					}
-				}
-			});
-
-			newChat.dataset.id = msgId;
-
-			if (pending) {
-				newChat.classList.add('pending');
-			}
-			if (init) {
-				chat.appendChild(newChat);
-			} else {
-				for (const e of Array.from(chat.querySelectorAll('.chat')).reverse()) {
-					const eId = parseInt(e.dataset.id);
-					if (!eId || msgId > eId) {
-						chat.insertBefore(newChat, e.nextSibling);
-						if (scrollPrompt && !atBottom) {
-							newChats++;
-							newChatsBtn.hidden = false;
-							newChatsText.innerText = `${newChats} New`;
-							observer.observe(newChat);
-						}
-						break;
-					}
-				}
-
-				if (atBottom) scrollBottom();
-			}
-		}
-
-		function addPending(message, level, user) {
-			const parts = message.split('\n').flatMap((e, i, a) => i < a.length - 1 ? [e, {'type': 'newline'}] : [e]);
-			addChat(true, 0, new Date().getTime() / 1000, level, user.startsWith('@') ? user.slice(1) : user, parts, true, true);
-			scrollBottom();
-		}
-		function removePending() {
-			Array.from(chat.querySelectorAll('.chat.pending')).forEach(e => e.remove());
-		}
-
-		function showError(type=null, text=null) {
-			if (text === null) {
-				errorWall.hidden = true;
-			} else {
-				errorWall.querySelector('p').innerHTML = '';
-				errorWall.querySelector('p').append(
-					document.createTextNode(type),
-					document.createElement('br'),
-					document.createTextNode(text)
-				);
-				errorWall.hidden = false;
-				burger(0);
-			}
-		}
-
-		const alertModal = document.getElementById('alert');
-		const alertEle = {
-			text: document.getElementById('alert-text'),
-			options: document.getElementById('alert-options'),
-			cancel: document.getElementById('alert-cancel'),
-			ok: document.getElementById('alert-ok')
-		}
-		alertModal.addEventListener('click', e => {
-			if (e.target === alertModal) alertModal.close();
-		});
-		function showAlert(html='Alert', ok=true, cancel=false) {
-			alertEle.text.innerHTML = html;
-			if (typeof ok === 'function') {
-				alertEle.ok.onclick = function() {
-					alertModal.close();
-					ok();
-				}
-			} else alertEle.ok.onclick = () => alertModal.close();
-			if (typeof cancel === 'function') {
-				alertEle.cancel.onclick = function() {
-					alertModal.close();
-					cancel();
-				}
-			} else alertEle.cancel.onclick = () => alertModal.close();
-
-			alertEle.options.hidden = ok === false && cancel === false;
-			alertEle.ok.hidden = ok === false;
-			alertEle.cancel.hidden = cancel === false;
-			alertModal.showModal();
-		}
-
-		const menuWrapper = document.getElementById('menu-wrapper');
-		function burger(value) {
-			menuWrapper.dataset.active = value;
-			if (value == 1) menuWrapper.querySelector('button, input, textarea')?.focus();
-		}
-		menuWrapper.addEventListener('click', e => {
-			if (e.target === menuWrapper) burger(0);
-		})
-		msgInput.addEventListener('keydown', e => {
-			if (e.key === 'Enter') {
-				if (e.shiftKey) return;
-				else {
-					e.preventDefault();
-					addPending(msgInput.value, session.level, getUser(true));
-					send(msgInput.value);
-					msgInput.value = '';
-				}
-			}
-		});
-		msgInput.addEventListener('focus', e => {
-			getUser(true);
-		});
-		document.addEventListener('keydown', e => {
-			if (e.key === 'Escape') burger(menuWrapper.dataset.active == 0 ? 1 : 0)
-			if (menuWrapper.dataset.active == 0) {
-				if (
-					e.key !== 'Tab' &&
-					e.key !== 'Escape' &&
-					e.target !== msgInput
-				) {
-					if (e.key === 'Enter' || e.key === 'Space') {
-						e.preventDefault();	
-					}
-					msgInput.focus();
-				}
-			}
-		});
-
-		menuEle.user.addEventListener('keydown', e => {
-			if (e.key === 'Enter') {
-				if (e.shiftKey) return;
-				else {
-					e.preventDefault();
-					menuEle.password.focus();
-				}
-			}
-		});
-		menuEle.password.addEventListener('keydown', e => {
-			if (e.key === 'Enter') {
-				if (e.shiftKey) return;
-				else {
-					e.preventDefault();
-					login();
-				}
-			}
-		});
-
-		async function sync() {
-			const user = getUser(false);
-			const latest = getLatest();
-			await fetch(`${SERVER}/get/${CHANNEL}?after=${latest}`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ user })
-			})
-				.then(resp => resp.json())
-				.then(data => {
-					if (data.success === true) {
-						showError();
-						const atBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < bottomError;
-						data.chat.forEach(c => addChat(
-							atBottom,
-							...c
-						));
-						removePending();
-					} else showError('Client Error:', data.error);
-				})
-				.catch(e => showError('Network Error:', e));
-		}
-
-		async function send(msg) {
-			const user = getUser(true);
-			await fetch(`${SERVER}/msg/${CHANNEL}`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ msg, user })
-			})
-				.then(resp => resp.json())
-				.then(data => {
-					if (data.success !== true) {
-						showError('Client Error:', data.error);
-					}
-				})
-				.catch(e => showError('Network Error:', e));
-		}
-
-		let syncInterval;
-		function startSync() {
-			if (!syncInterval) {
-				sync();
-				syncInterval = setInterval(sync, 5000);
-			}
-		}
-		function stopSync() {
-			if (syncInterval) {
-				clearInterval(syncInterval);
-				syncInterval = null;
-			}
-		}
 		
-		window.addEventListener('message', e => {
-			if (e.data && e.data.type === 'control-sync') {
-				if (e.data.sync) startSync();
-				else stopSync();
-			}
-		});
-
-		let scrollPrompt = false;
-		sync().then(() => { 
-			scrollBottom();
-			scrollPrompt = true;
-		});
-		startSync();
 	</script>
 </body>
 </html>
