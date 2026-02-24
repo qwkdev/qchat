@@ -1139,9 +1139,8 @@ body {
 		});
 
 		let scrollPrompt = false;
-		sync().then(() => { 
-			scrollBottom(false);
-			setTimeout(() => scrollBottom(false), 100);
+		sync().then(() => {
+			while (chat.scrollHeight - chat.scrollTop - chat.clientHeight < bottomError) scrollBottom(false);
 			scrollPrompt = true;
 		});
 		startSync();
