@@ -863,12 +863,12 @@ body {
 				body: JSON.stringify({ msg, user })
 			})
 				.then(resp => resp.json())
-				.then(data => {
+				.then(async data => {
 					if (data.success !== true) {
 						showError('Client Error:', data.error);
 					} else {
 						chat.querySelectorAll('.chat:not(.template)').forEach(e => e.remove());
-						sync();
+						await sync();
 						setTimeout(() => scrollBottom(false), 100);
 					}
 				})
