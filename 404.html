@@ -1141,6 +1141,8 @@ body {
 		let scrollPrompt = false;
 		sync().then(() => {
 			scrollBottom(false);
+			setTimeout(() => scrollBottom(false), 100);
+			setTimeout(() => scrollBottom(false), 200);
 			scrollPrompt = true;
 		});
 		startSync();
