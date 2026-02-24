@@ -1034,11 +1034,15 @@ body {
 		msgInput.addEventListener('focus', e => {
 			getUser(true);
 		});
+		let keysDown = new Set();
 		document.addEventListener('keydown', e => {
+			keysDown.add(e.key);
 			if (e.key === 'Escape') burger(menuWrapper.dataset.active == 0 ? 1 : 0)
 			if (menuWrapper.dataset.active == 0) {
 				if (
-					!['Tab', 'Control', 'Shift', 'CapsLock', 'Alt'].includes(e.key) && e.target !== msgInput
+					!['Tab', 'Control', 'Shift', 'CapsLock', 'Alt'].includes(e.key) &&
+					e.target !== msgInput &&
+					!keysDown.has('Control')
 				) {
 					if (e.key === 'Enter' || e.key === 'Space') {
 						e.preventDefault();	
@@ -1047,6 +1051,7 @@ body {
 				}
 			}
 		});
+		document.addEventListener('keyup', e => keysDown.remove(e.key));
 
 		menuEle.user.addEventListener('keydown', e => {
 			if (e.key === 'Enter') {
