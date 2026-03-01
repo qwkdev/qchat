@@ -662,7 +662,7 @@ body {
 		<textarea id="msg-input" placeholder="Loading..."></textarea>
 
 		<div id="info">
-			<p>qchat.lol</p>
+			<p id="domain">qchat.lol</p>
 			<p>Made by <span><a class="underlined" href="https://qwkdev.github.io/" target="_blank" aria-label="label">qwk<span class="underline" style="--widen: 5%; --fix: 1%;"></span></a></span></p>
 		</div>
 	</div>
@@ -774,6 +774,7 @@ body {
 
 		const channelName = parseChannel(CHANNEL);
 		document.getElementById('channel').innerText = channelName;
+		document.getElementById('domain').innerText += '/' + CHANNEL;
 
 		const msgInput = document.getElementById('msg-input');
 		msgInput.placeholder = `Message ${channelName}`;
