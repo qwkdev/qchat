@@ -977,8 +977,11 @@ body {
 					document.createElement('br'),
 					document.createTextNode(text)
 				);
-				errorWall.hidden = false;
-				burger(0);
+				if (errorWall.dataset.value != type + text || errorWall.hidden) {
+					errorWall.dataset.value = type + text;
+					errorWall.hidden = false;
+					burger(0);
+				}
 			}
 		}
 
