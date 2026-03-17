@@ -29,6 +29,12 @@ body {
 	background: #000;
 	overflow: hidden;
 }
+* {
+	scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+	display: none;
+}
 .btn {
 	--btn-h: var(--h);
 	--btn-s: var(--s);
@@ -288,10 +294,6 @@ body {
 	display: flex;
 	flex-direction: column;
 	gap: calc(1.25 * var(--u));
-	scrollbar-width: none;
-}
-#chats::-webkit-scrollbar {
-	display: none;
 }
 #chats:focus {
 	outline: var(--border-width) solid var(--c);
@@ -593,7 +595,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.3.6</span></p>
+		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.3.7</span></p>
 		<div class="right">
 			<p class="mod lvl3" hidden>MOD</p>
 			<p id="channel"></p>
