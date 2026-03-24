@@ -756,12 +756,11 @@ body {
 			})
 				.then(resp => resp.json())
 				.then(data => {
-					if (data.success === true) {
-						session.user = null;
-						session.level = 0;
+					if (data.success !== true) showError('Client Error:', data.error);
 
-						fixMenuSections();
-					} else showError('Client Error:', data.error);
+					session.user = null;
+					session.level = 0;
+					fixMenuSections();
 				})
 				.catch(e => showError('Network Error:', e));
 		}
