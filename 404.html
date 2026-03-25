@@ -1155,7 +1155,7 @@ body {
 				}
 			}
 		});
-		document.addEventListener('keyup', e => keysDown.remove(e.key));
+		document.addEventListener('keyup', e => keysDown.delete(e.key));
 
 		menuEle.user.addEventListener('keydown', e => {
 			if (e.key === 'Enter') {
