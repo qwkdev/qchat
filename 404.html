@@ -352,6 +352,7 @@ body {
 .chat .mod {
 	margin: 0;
 	margin-left: auto;
+	gap: calc(.4 * var(--u));
 }
 .chat .mod button {
 	position: relative;
@@ -595,7 +596,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.3.7</span></p>
+		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.3.8</span></p>
 		<div class="right">
 			<p class="mod lvl3" hidden>MOD</p>
 			<p id="channel"></p>
@@ -632,7 +633,10 @@ body {
 				<h1></h1>
 				<h2></h2>
 				<div class="mod" hidden>
-					<button class="mod-delete" onclick="modDelete(this)">
+					<button onclick="modDelete(this)">
+						<svg style="transform: translateY(-3%)" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M12 14V11M12 6C7.85786 6 4.5 9.35786 4.5 13.5C4.5 17.6421 7.85786 21 12 21C16.1421 21 19.5 17.6421 19.5 13.5C19.5 11.5561 18.7605 9.78494 17.5474 8.4525M12 6C14.1982 6 16.1756 6.94572 17.5474 8.4525M12 6V3M19.5 6.5L17.5474 8.4525M12 3H9M12 3H15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+					</button>
+					<button onclick="modDelete(this)">
 						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M6 6L18 18M18 6L6 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 					</button>
 				</div>
