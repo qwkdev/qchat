@@ -1067,6 +1067,7 @@ body {
 		function showError(type=null, text=null) {
 			if (text === null) {
 				errorWall.hidden = true;
+				clearTimeout(hideError);
 			} else {
 				errorWall.querySelector('p').innerHTML = '';
 				errorWall.querySelector('p').append(
