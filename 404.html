@@ -8,25 +8,45 @@
 	<style>
 :root {
 	--u: 1.8vw;
+
 	--c: #30f;
 	--c2: #90f;
+
+	--l31: #02d;
+	--l32: #0cf;
+
+	--l21: #f80;
+	--l22: #ff0;
+
 	--action: #205;
 	--action2: #2a006c;
 	--action3: #30a;
+
 	--grey: #555;
 	--grey-s: #5557;
+
+	--bg: #000;
+	--shadow: #0007;
+
+	--text: #fff;
+	--text-s: #fff5;
+	--text2: #ccc;
+
 	--fg: #141415;
 	--fg2: #1f1f20;
 	--fg3: #252526;
+
 	--border: #333;
 	--border2: #555;
+
+
 	--border-width: calc(.12 * var(--u));
 	--br: calc(1 * var(--u));
 	--chat-margin: calc(1 * var(--u));
 }
 body {
 	margin: 0;
-	background: #000;
+	background: var(--bg);
 	overflow: hidden;
 }
 * {
@@ -44,7 +64,7 @@ body {
 	box-sizing: border-box;
 	font-family: monospace;
 	font-size: calc(2 * var(--u));
-	color: #fff;
+	color: var(--text);
 
 	background: hsl(var(--btn-h), calc(83% * var(--btn-s)), calc(57% * var(--btn-l)));
 	border: var(--border) solid hsl(var(--btn-h), calc(70% * var(--btn-s)), calc(48% * var(--btn-l)));
@@ -92,7 +112,7 @@ body {
 	left: 0;
 	width: calc(2.5 * var(--u));
 	height: calc(2.5 * var(--u));
-	stroke: #fff;
+	stroke: var(--text);
 }
 #top .right {
 	margin-left: auto;
@@ -111,7 +131,7 @@ body {
 	user-select: none;
 	margin: 0;
 	font-family: monospace;
-	color: #fff;
+	color: var(--text);
 	font-size: calc(2.5 * var(--u));
 	font-weight: 700;
 }
@@ -119,7 +139,7 @@ body {
 	user-select: none;
 	margin: 0;
 	font-family: monospace;
-	color: #fff;
+	color: var(--text);
 	font-size: calc(2.5 * var(--u));
 }
 .logo b {
@@ -163,15 +183,16 @@ body {
 #menu-wrapper #menu {
 	width: 100%;
 	height: 100%;
-	background: #000;
-	box-shadow: 0 0 calc(5 * var(--u)) 0 #000;
+	background: var(--bg);
+	box-shadow: 0 0 calc(5 * var(--u)) 0 var(--bg);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	gap: calc(5 * var(--u));
 }
 #menu-wrapper #menu .logo {
 	font-size: calc(3 * var(--u));
-	margin: calc(5 * var(--u)) 0;
+	margin-top: calc(5 * var(--u));
 	text-align: center;
 }
 #menu-wrapper #menu div {
@@ -206,13 +227,13 @@ body {
 	font-family: monospace;
 	font-size: calc(2 * var(--u));
 	padding-left: calc(1.25 * var(--u));
-	color: #fff;
+	color: var(--text);
 }
 #menu-wrapper #menu button {
 	background: var(--fg2);
 	border: var(--border-width) solid var(--border2);
 	border-radius: var(--br);
-	color: #fff;
+	color: var(--text);
 }
 #menu-wrapper #menu button:hover {
 	background: var(--fg3);
@@ -224,10 +245,10 @@ body {
 	font-size: calc(2 * var(--u));
 	margin: 0;
 	text-align: center;
-	color: #fff;
+	color: var(--text);
 }
 #menu-wrapper #menu h1::selection, #menu-wrapper #menu h2::selection, #menu-wrapper #menu p:not(.logo)::selection {
-	background: #fff5;
+	background: var(--text-s);
 }
 #menu-wrapper #menu p:not(.logo) {
 	font-size: calc(1.5 * var(--u));
@@ -239,7 +260,7 @@ body {
 	position: relative;
 	width: calc(5 * var(--u));
 	height: calc(5 * var(--u));
-	background: #000;
+	background: var(--bg);
 	border: none;
 }
 #menu-wrapper #close-menu:focus {
@@ -252,7 +273,7 @@ body {
 	transform: translate(-50%, -50%);
 	width: calc(2.5 * var(--u));
 	height: calc(2.5 * var(--u));
-	stroke: #fff;
+	stroke: var(--text);
 }
 #menu-wrapper[data-active="1"] {
 	left: 0;
@@ -266,14 +287,14 @@ body {
 	-webkit-text-fill-color: transparent !important;
 }
 .lvl3 {
-	background: linear-gradient(to bottom, #02d 20%, #0cf);
+	background: linear-gradient(to bottom, var(--l31) 20%, var(--l32));
 	background-clip: text;
 	-webkit-background-clip: text;
 	color: transparent !important;
 	-webkit-text-fill-color: transparent !important;
 }
 .lvl2 {
-	background: linear-gradient(to bottom, #f80 20%, #ff0);
+	background: linear-gradient(to bottom, var(--l21) 20%, var(--l22));
 	background-clip: text;
 	-webkit-background-clip: text;
 	color: transparent !important;
@@ -339,10 +360,10 @@ body {
 	line-height: calc(2 * var(--u));
 }
 .chat h1, .chat p, .chat span {
-	color: #fff;
+	color: var(--text);
 }
 .chat h1::selection, .chat p::selection, .chat span::selection {
-	background: #fff5;
+	background: var(--text-s);
 }
 .chat .mention {
 	padding: var(--border-width);
@@ -371,7 +392,7 @@ body {
 	left: 0;
 	width: calc(1.5 * var(--u));
 	height: calc(1.5 * var(--u));
-	stroke: #fff;
+	stroke: var(--text);
 	stroke-width: 2px;
 }
 .pending {
@@ -389,12 +410,12 @@ body {
 	position: absolute;
 	bottom: calc(12.25 * var(--u));
 	right: calc(1 * var(--u));
-	box-shadow: 0 0 calc(1 * var(--u)) calc(-.5 * var(--u)) #000;
+	box-shadow: 0 0 calc(1 * var(--u)) calc(-.5 * var(--u)) var(--bg);
 	transition: .2s;
 	z-index: 10;
 }
 #new p {
-	color: #fff;
+	color: var(--text);
 	font-family: Arial;
 	margin: calc(.5 * var(--u)) 0;
 	font-size: calc(2 * var(--u));
@@ -404,7 +425,7 @@ body {
 	height: calc(2 * var(--u));
 }
 #new svg path {
-	stroke: #fff;
+	stroke: var(--text);
 }
 #new:hover {
 	background: var(--fg2);
@@ -437,12 +458,12 @@ body {
 	text-align: center;
 	margin: 0;
 	font-size: calc(4 * var(--u));
-	color: #fff;
+	color: var(--text);
 	font-family: monospace;
 }
 #chat-wrapper:has(#error:not([hidden]))::before, #chat-wrapper:has(#error:not([hidden]))::after {
 	height: calc(2 * var(--u));
-	background: #000;
+	background: var(--bg);
 }
 #bottom {
 	position: absolute;
@@ -450,11 +471,11 @@ body {
 	left: 0;
 	width: 100vw;
 	height: calc(11 * var(--u));
-	background: #000;
+	background: var(--bg);
 }
 #top, #bottom {
 	z-index: 10;
-	box-shadow: 0 0 calc(1 * var(--u)) calc(.5 * var(--u)) #000;
+	box-shadow: 0 0 calc(1 * var(--u)) calc(.5 * var(--u)) var(--bg);
 }
 #msg-input {
 	position: absolute;
@@ -468,7 +489,7 @@ body {
 	font-size: calc(2 * var(--u));
 	padding: calc(2.2 * var(--u)) calc(2 * var(--u));
 	box-sizing: border-box;
-	color: #ccc;
+	color: var(--text2);
 	background: var(--fg);
 	border: var(--border-width) solid var(--border);
 	transition: .4s;
@@ -479,7 +500,7 @@ body {
 }
 #msg-input::selection {
 	background: var(--c);
-	color: #fff;
+	color: var(--text);
 }
 .underlined {
 	color: var(--grey);
@@ -503,13 +524,13 @@ body {
 	z-index: -1;
 }
 .underlined:hover {
-	color: #000;
+	color: var(--bg);
 }
 .underlined:hover .underline {
 	height: 100%;
 }
 .underlined::selection {
-	background: #fff5;
+	background: var(--text-s);
 }
 .template {
 	display: none;
@@ -522,7 +543,7 @@ body {
 	top: 0;
 	left: 0;
 	z-index: 100;
-	background: #0007;
+	background: var(--shadow);
 }
 #alert #alert-box {
 	max-width: 80vw;
@@ -543,7 +564,7 @@ body {
 	font-size: calc(3 * var(--u));
 	font-weight: 500;
 	font-family: Arial;
-	color: #fff;
+	color: var(--text);
 }
 #alert #alert-box #alert-options {
 	display: flex;
@@ -596,7 +617,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.3.8</span></p>
+		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.4.0</span></p>
 		<div class="right">
 			<p class="mod lvl3" hidden>MOD</p>
 			<p id="channel"></p>
@@ -621,6 +642,11 @@ body {
 				<h2 id="logged-in"></h2>
 				<button onclick="logout()">Logout</button>
 			</div>
+			<div id="mod-section" class="mod" hidden>
+				<p>Mod tools:</p>
+				<button onclick="modNuke()">Nuke Channel</button>
+				<button onclick="modClearTimeouts()">Clear Timeouts</button>
+			</div>
 		</div>
 		<button id="close-menu" onclick="burger(0)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M15 6L9 12L15 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
@@ -633,7 +659,7 @@ body {
 				<h1></h1>
 				<h2></h2>
 				<div class="mod" hidden>
-					<button onclick="modDelete(this)">
+					<button onclick="modTimeout(this)">
 						<svg style="transform: translateY(-3%)" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M12 14V11M12 6C7.85786 6 4.5 9.35786 4.5 13.5C4.5 17.6421 7.85786 21 12 21C16.1421 21 19.5 17.6421 19.5 13.5C19.5 11.5561 18.7605 9.78494 17.5474 8.4525M12 6C14.1982 6 16.1756 6.94572 17.5474 8.4525M12 6V3M19.5 6.5L17.5474 8.4525M12 3H9M12 3H15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 					</button>
 					<button onclick="modDelete(this)">
@@ -674,6 +700,8 @@ body {
 	</div>
 
 	<script>
+		const DEFAULT_TIMEOUT_DURATION = 10 * 60;
+
 		const MAX_NAME_LENGTH = 16;
 		function safeText(text) {
 			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, MAX_NAME_LENGTH);
@@ -685,6 +713,31 @@ body {
 		let session = {
 			user: null,
 			level: 0
+		}
+
+		if (localStorage.getItem('user') !== '') {
+			const tempUser = localStorage.getItem('user');
+			fetch(`${SERVER}/check`, {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					user: '@' + tempUser
+				})
+			})
+				.then(resp => resp.json())
+				.then(data => {
+					if (data.success === true) loginUser(data)
+					else showError('Client Error:', data.error);
+				})
+				.catch(e => showError('Network Error:', e));
+		}
+
+		function saveSession() {
+			if (session.user) localStorage.setItem('user', session.user);
+			else localStorage.removeItem('user');
 		}
 
 		const loginSection = document.getElementById('login-section');
@@ -718,6 +771,17 @@ body {
 			const modHidden = !session.user || session.level < 3;
 			document.querySelectorAll('.mod').forEach(e => e.hidden = modHidden);
 		}
+		
+		function loginUser(data) {
+			session.user = data.user || null;
+			session.level = data.level || 0;
+			saveSession();
+			
+			menuEle.password.value = '';
+			fixMenuSections();
+			resetChat();
+		}
+
 		async function login() {
 			if (!menuEle.user.value || !menuEle.password.value) return;
 
@@ -736,14 +800,8 @@ body {
 			})
 				.then(resp => resp.json())
 				.then(data => {
-					if (data.success === true) {
-						session.user = data.user || null;
-						session.level = data.level || 0;
-						
-						menuEle.password.value = '';
-						fixMenuSections();
-						resetChat();
-					} else showError('Client Error:', data.error);
+					if (data.success === true) loginUser(data)
+					else showError('Client Error:', data.error);
 				})
 				.catch(e => showError('Network Error:', e));
 		}
@@ -764,6 +822,7 @@ body {
 
 					session.user = null;
 					session.level = 0;
+					saveSession();
 					fixMenuSections();
 				})
 				.catch(e => showError('Network Error:', e));
@@ -859,29 +918,56 @@ body {
 
 		/////
 
+		function modTimeout(btn) {
+			const msg = parseInt(btn.parentElement.parentElement.parentElement.dataset.id);
+			if (Number.isNaN(msg)) return;
+
+			showAlert('Confirm timeout', () => {
+				sendRequest(`/mod/timeout/${CHANNEL}`, { msg, duration: DEFAULT_TIMEOUT_DURATION });
+			}, true);
+		}
 		function modDelete(btn) {
 			const msg = parseInt(btn.parentElement.parentElement.parentElement.dataset.id);
 			if (Number.isNaN(msg)) return;
 
-			showAlert('Confirm deletion', () => modSendDelete(msg), true);
+			showAlert('Confirm deletion', () => {
+				sendRequest(`/mod/delete/${CHANNEL}`, { msg }, resetChat);
+			}, true);
 		}
-		async function modSendDelete(msg) {
+		function modNuke() {
+			showAlert('Confirm nuke', () => {
+				sendRequest(`/mod/nuke/${CHANNEL}`, null, resetChat);
+			}, true);
+		}
+		function modClearTimeouts() {
+			showAlert('Confirm removing ALL timeouts', () => {
+				sendRequest('/mod/cleartimeouts');
+			}, true);
+		}
+
+		async function sendRequest(path, body=null, after=null) {
 			const user = getUser(true);
-			await fetch(`${SERVER}/mod/delete/${CHANNEL}`, {
+			const resp = await fetch(`${SERVER}${path}`, {
 				method: 'POST',
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ msg, user })
+				body: JSON.stringify({ user, ...(body ?? {}) })
 			})
 				.then(resp => resp.json())
-				.then(async data => {
+				.then(data => {
 					if (data.success !== true) {
 						showError('Client Error:', data.error);
-					} else resetChat();
+					} else {
+						if (after) after();
+					}
+
+					return data;
 				})
 				.catch(e => showError('Network Error:', e));
+
+			return resp ?? {'success': false};
 		}
 
 		/////
@@ -976,7 +1062,10 @@ body {
 			Array.from(chat.querySelectorAll('.chat.pending')).forEach(e => e.remove());
 		}
 
+		let hideError;
 		function showError(type=null, text=null) {
+			clearTimeout(hideError);
+
 			if (text === null) {
 				errorWall.hidden = true;
 			} else {
@@ -990,6 +1079,8 @@ body {
 					errorWall.dataset.value = type + text;
 					errorWall.hidden = false;
 					burger(0);
+
+					hideError = setTimeout(() => showError(), 3000);
 				}
 			}
 		}
@@ -1099,7 +1190,6 @@ body {
 				.then(resp => resp.json())
 				.then(data => {
 					if (data.success === true) {
-						showError();
 						const atBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < bottomError;
 						data.chat.forEach(c => addChat(
 							atBottom,
