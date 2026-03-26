@@ -1011,7 +1011,10 @@ body {
 
 			return window.Notification && (isTopLevel || sameOrigin);
 		}
-		if (!canSendNotifs()) notifToggle.hidden = true;
+		if (!canSendNotifs()) {
+			notifToggle.hidden = true;
+			notifications = false;
+		}
 
 		async function toggleNotifications() {
 			if (!canSendNotifs()) {
