@@ -1014,7 +1014,7 @@ body {
 		}
 		function canSendNotifs() {
 			const isTopLevel = window === window.top;
-			const sameOrigin = isTopLevel || isSameOriginIframe();
+			const sameOrigin = isTopLevel || sameOriginIframe();
 
 			return window.Notification && (isTopLevel || sameOrigin);
 		}
