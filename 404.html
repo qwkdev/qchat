@@ -985,6 +985,7 @@ body {
 
 		let notifications = false;
 
+		const notifToggle = document.getElementById('notif-toggle');
 		function setSettings() {
 			notifToggle.innerText = 'Notifications: ' + (notifications ? 'On' : 'Off');
 		}
@@ -1000,8 +1001,6 @@ body {
 		}
 
 		loadSettings();
-
-		const notifToggle = document.getElementById('notif-toggle');
 		async function toggleNotifications() {
 			if (!window.Notification) {
 				alert('Your browser does not support notifications.');
