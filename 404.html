@@ -1291,15 +1291,14 @@ body {
 			}
 		});
 
-		let syncedEvents = [];
+		let syncedEvents = new Set();
 		function syncEvent(event) {
-			if (syncedEvents.includes(event)) return;
+			if (syncedEvents.has(JSON.stringify(event))) return;
 
-			console.log(event);
 			if (event[1] === 'delete') {
 				document.getElementById(event[2])?.remove();
 			}
-			syncedEvents.push(event);
+			syncedEvents.add(JSON.stringify(event));
 		}
 
 		async function sync() {
