@@ -939,7 +939,7 @@ body {
 			if (Number.isNaN(msg)) return;
 
 			showAlert('Confirm deletion', () => {
-				sendRequest(`/mod/delete/${CHANNEL}`, { msg }, resetChat);
+				sendRequest(`/mod/delete/${CHANNEL}`, { msg }, sync);
 			}, true);
 		}
 		function modNuke() {
@@ -1292,6 +1292,19 @@ body {
 		});
 
 		let syncedEvents = new Set();
+
+		function syncEvents(events) {
+			// console.log(events, events.length, events[0]?.[1], syncedEvents, JSON.stringify(event));
+			// if (events.length === 1 && events[0][1] === 'reset' && !syncedEvents.has(JSON.stringify(event))) {
+			// 	syncedEvents.clear();
+			// 	syncedEvents.add(JSON.stringify(event));
+			// 	resetChat();
+			// 	return;
+			// }
+
+			events.forEach(e => syncEvent(e));
+		}
+
 		function syncEvent(event) {
 			if (syncedEvents.has(JSON.stringify(event))) return;
 
@@ -1322,7 +1335,7 @@ body {
 						));
 						removePending();
 
-						data.events.forEach(e => syncEvent(e));
+						syncEvents(data.events);
 					} else showError('Client Error:', data.error);
 				})
 				.catch(e => showError('Network Error:', e));
