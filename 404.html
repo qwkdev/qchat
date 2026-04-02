@@ -617,7 +617,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.5.2</span></p>
+		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.5.3</span></p>
 		<div class="right">
 			<p class="mod lvl3" hidden>MOD</p>
 			<p id="channel"></p>
@@ -860,7 +860,7 @@ body {
 
 		async function resetChat() {
 			chat.querySelectorAll('.chat:not(.template)').forEach(e => e.remove());
-			await sync();
+			await sync(false);
 			setTimeout(() => scrollBottom(false), 100);
 		}
 
@@ -1099,7 +1099,7 @@ body {
 		}
 
 		const bottomError = 10; // px
-		function addChat(atBottom, msgId, epoch, level, user, parts, ip=null, init=false, pending=false) {
+		function addChat(notif, atBottom, msgId, epoch, level, user, parts, ip=null, init=false, pending=false) {
 			if (!pending && checkExists(msgId)) return;
 
 			const newChat = chatTemplate.cloneNode(true);
@@ -1149,7 +1149,7 @@ body {
 					if (!eId || msgId > eId) {
 						chat.insertBefore(newChat, e.nextSibling);
 
-						if (notifications && !pending && !init) {
+						if (notifications && notif) {
 							pushNotif(
 								parseUser(user, level),
 								partsToString(parts)
@@ -1172,7 +1172,7 @@ body {
 
 		function addPending(message, level, user) {
 			const parts = message.split('\n').flatMap((e, i, a) => i < a.length - 1 ? [e, {'type': 'newline'}] : [e]);
-			addChat(true, 0, new Date().getTime() / 1000, level, user.startsWith('@') ? user.slice(1) : user, parts, null, true, true);
+			addChat(false, true, 0, new Date().getTime() / 1000, level, user.startsWith('@') ? user.slice(1) : user, parts, null, true, true);
 			scrollBottom();
 		}
 		function removePending() {
@@ -1314,7 +1314,7 @@ body {
 			syncedEvents.add(JSON.stringify(event));
 		}
 
-		async function sync() {
+		async function sync(notif=true) {
 			const user = getUser(false);
 			const latest = getLatest();
 			await fetch(`${SERVER}/get/${CHANNEL}?after=${latest}`, {
@@ -1330,6 +1330,7 @@ body {
 					if (data.success === true) {
 						const atBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < bottomError;
 						data.chat.forEach(c => addChat(
+							notif,
 							atBottom,
 							...c
 						));
@@ -1382,7 +1383,7 @@ body {
 		});
 
 		let scrollPrompt = false;
-		sync().then(() => {
+		sync(false).then(() => {
 			scrollBottom(false);
 			setTimeout(() => scrollBottom(false), 100);
 			setTimeout(() => scrollBottom(false), 200);
