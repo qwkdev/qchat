@@ -108,10 +108,11 @@ body {
 }
 #top button svg {
 	position: absolute;
-	top: 0;
-	left: 0;
-	width: calc(2.5 * var(--u));
-	height: calc(2.5 * var(--u));
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: calc(3 * var(--u));
+	height: calc(3 * var(--u));
 	stroke: var(--text);
 }
 #top .right {
@@ -127,14 +128,6 @@ body {
 	font-size: calc(2.5 * var(--u));
 	color: var(--grey);
 }
-#top p.mod {
-	user-select: none;
-	margin: 0;
-	font-family: monospace;
-	color: var(--text);
-	font-size: calc(2.5 * var(--u));
-	font-weight: 700;
-}
 .logo {
 	user-select: none;
 	margin: 0;
@@ -144,10 +137,6 @@ body {
 }
 .logo b {
 	font-weight: 700;
-}
-.logo .version {
-	color: var(--grey);
-	font-size: calc(2 * var(--u));
 }
 #info {
 	position: absolute;
@@ -167,117 +156,6 @@ body {
 }
 #info p::selection {
 	background: var(--grey-s);
-}
-#menu-wrapper {
-	pointer-events: none;
-	position: absolute;
-	top: 0;
-	left: -100vw;
-	width: 100vw;
-	height: 100vh;
-	z-index: 50;
-	display: grid;
-	grid-template-columns: auto calc(5 * var(--u));
-	transition: .5s;
-}
-#menu-wrapper #menu {
-	width: 100%;
-	height: 100%;
-	background: var(--bg);
-	box-shadow: 0 0 calc(5 * var(--u)) 0 var(--bg);
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: calc(5 * var(--u));
-}
-#menu-wrapper #menu .logo {
-	font-size: calc(3 * var(--u));
-	margin-top: calc(5 * var(--u));
-	text-align: center;
-}
-#menu-wrapper #menu div {
-	width: 100%;
-	height: max-content;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: calc(1 * var(--u));
-}
-#menu-wrapper #menu div[hidden] {
-	display: none;
-}
-#menu-wrapper #menu input[type="text"], #menu-wrapper #menu input[type="password"], #menu-wrapper #menu button {
-	width: 50%;
-	height: calc(5 * var(--u));
-	box-sizing: border-box;
-	font-family: monospace;
-	font-size: calc(2 * var(--u));
-}
-#menu-wrapper #menu input[type="text"]:focus, #menu-wrapper #menu input[type="password"]:focus, #menu-wrapper #menu button:focus {
-	outline: none;
-	border-color: var(--c);
-}
-#menu-wrapper #menu input[type="text"]::selection, #menu-wrapper #menu input[type="password"]::selection, #menu-wrapper #menu button::selection {
-	background: var(--c);
-}
-#menu-wrapper #menu input[type="text"], #menu-wrapper #menu input[type="password"] {
-	background: var(--fg);
-	border: var(--border-width) solid var(--border);
-	border-radius: var(--br);
-	font-family: monospace;
-	font-size: calc(2 * var(--u));
-	padding-left: calc(1.25 * var(--u));
-	color: var(--text);
-}
-#menu-wrapper #menu button {
-	background: var(--fg2);
-	border: var(--border-width) solid var(--border2);
-	border-radius: var(--br);
-	color: var(--text);
-}
-#menu-wrapper #menu button:hover {
-	background: var(--fg3);
-}
-#menu-wrapper #menu h1, #menu-wrapper #menu h2, #menu-wrapper #menu p:not(.logo) {
-	width: 50%;
-	box-sizing: border-box;
-	font-family: monospace;
-	font-size: calc(2 * var(--u));
-	margin: 0;
-	text-align: center;
-	color: var(--text);
-}
-#menu-wrapper #menu h1::selection, #menu-wrapper #menu h2::selection, #menu-wrapper #menu p:not(.logo)::selection {
-	background: var(--text-s);
-}
-#menu-wrapper #menu p:not(.logo) {
-	font-size: calc(1.5 * var(--u));
-}
-#menu-wrapper #menu #logout-section h2 {
-	margin: calc(1 * var(--u)) 0 calc(1.25 * var(--u)) 0;
-}
-#menu-wrapper #close-menu {
-	position: relative;
-	width: calc(5 * var(--u));
-	height: calc(5 * var(--u));
-	background: var(--bg);
-	border: none;
-}
-#menu-wrapper #close-menu:focus {
-	outline: none;
-}
-#menu-wrapper #close-menu svg {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: calc(2.5 * var(--u));
-	height: calc(2.5 * var(--u));
-	stroke: var(--text);
-}
-#menu-wrapper[data-active="1"] {
-	left: 0;
-	pointer-events: auto;
 }
 .lvl4 {
 	background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
@@ -299,141 +177,6 @@ body {
 	-webkit-background-clip: text;
 	color: transparent !important;
 	-webkit-text-fill-color: transparent !important;
-}
-#chats {
-	position: absolute;
-	top: calc(5.5 * var(--u));
-	left: 50%;
-	transform: translateX(-50%);
-	width: calc(100vw - var(--chat-margin) * 2);
-	height: calc(100vh - (16.5 * var(--u)));
-	height: calc(100dvh - (16.5 * var(--u)));
-	padding-bottom: calc(1.25 * var(--u));
-	box-sizing: border-box;
-	overflow-x: hidden;
-	overflow-y: scroll;
-	display: flex;
-	flex-direction: column;
-	gap: calc(1.25 * var(--u));
-}
-#chats:focus {
-	outline: var(--border-width) solid var(--c);
-}
-.chat {
-	width: 100%;
-	height: min-content;
-	box-sizing: border-box;
-	background: var(--fg);
-	border: var(--border-width) solid var(--border);
-	border-radius: var(--br);
-	padding: 0 calc(.7 * var(--u)) calc(.5 * var(--u)) calc(.7 * var(--u));
-}
-.chat div {
-	display: flex;
-	align-items: center;
-	margin: 0;
-	margin-top: calc(.7 * var(--u));
-	gap: calc(.7 * var(--u));
-}
-.chat h1 {
-	font-family: monospace;
-	margin: 0;
-	font-size: calc(1.8 * var(--u));
-	font-weight: 700;
-}
-.chat h2 {
-	font-family: monospace;
-	margin: 0;
-	color: var(--grey);
-	font-size: calc(1.2 * var(--u));
-	font-weight: 700;
-}
-.chat h2::selection {
-	background: var(--grey-s);
-}
-.chat p {
-	margin: 0;
-	margin-top: calc(.7 * var(--u));
-	font-family: Arial;
-	font-size: calc(1.5 * var(--u));
-	font-weight: 500;
-	line-height: calc(2 * var(--u));
-}
-.chat h1, .chat p, .chat span {
-	color: var(--text);
-}
-.chat h1::selection, .chat p::selection, .chat span::selection {
-	background: var(--text-s);
-}
-.chat .mention {
-	padding: var(--border-width);
-	border: var(--border-width) solid var(--border);
-	border-radius: calc(var(--br) / 2);
-}
-.chat .mod {
-	margin: 0;
-	margin-left: auto;
-	gap: calc(.4 * var(--u));
-}
-.chat .mod button {
-	position: relative;
-	background: transparent;
-	border: none;
-	width: calc(1.5 * var(--u));
-	height: calc(1.5 * var(--u));
-	padding: 0;
-}
-.chat .mod button:focus {
-	outline: none;
-}
-.chat .mod button svg {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: calc(1.5 * var(--u));
-	height: calc(1.5 * var(--u));
-	stroke: var(--text);
-	stroke-width: 2px;
-}
-.pending {
-	border-color: var(--border2);
-}
-#new {
-	display: flex;
-	align-items: center;
-	gap: calc(.4 * var(--u));
-	padding-left: calc(.7 * var(--u));
-	box-sizing: border-box;
-	background: var(--fg);
-	border: var(--border-width) solid var(--border);
-	border-radius: var(--br);
-	position: absolute;
-	bottom: calc(12.25 * var(--u));
-	right: calc(1 * var(--u));
-	box-shadow: 0 0 calc(1 * var(--u)) calc(-.5 * var(--u)) var(--bg);
-	transition: .2s;
-	z-index: 10;
-}
-#new p {
-	color: var(--text);
-	font-family: Arial;
-	margin: calc(.5 * var(--u)) 0;
-	font-size: calc(2 * var(--u));
-}
-#new svg {
-	width: calc(2 * var(--u));
-	height: calc(2 * var(--u));
-}
-#new svg path {
-	stroke: var(--text);
-}
-#new:hover {
-	background: var(--fg2);
-	border: var(--border-width) solid var(--border2);
-	transform: scale(1.03);
-}
-#new[hidden] {
-	display: none;
 }
 
 #error {
@@ -460,10 +203,6 @@ body {
 	font-size: calc(4 * var(--u));
 	color: var(--text);
 	font-family: monospace;
-}
-#chat-wrapper:has(#error:not([hidden]))::before, #chat-wrapper:has(#error:not([hidden]))::after {
-	height: calc(2 * var(--u));
-	background: var(--bg);
 }
 #bottom {
 	position: absolute;
@@ -614,8 +353,8 @@ body {
 </head>
 <body>
 	<div id="top">
-		<button onclick="burger(1)">
-			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+		<button onclick="back(1)">
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M6 12H18M6 12L11 7M6 12L11 17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
 		<p class="logo"><b class="lvl4">Q</b>Chat</p>
 		<div class="right">
@@ -644,8 +383,6 @@ body {
 	</dialog>
 
 	<div id="bottom">
-		<textarea id="msg-input" placeholder="Loading..."></textarea>
-
 		<div id="info">
 			<p id="domain">qchat.lol</p>
 			<p>Made by <span><a class="underlined" href="https://qwkdev.github.io/" target="_blank" aria-label="label">qwk<span class="underline" style="--widen: 5%; --fix: 1%;"></span></a></span></p>
