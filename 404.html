@@ -12,8 +12,11 @@
 	--c: #30f;
 	--c2: #90f;
 
-	--l31: #02d;
-	--l32: #0cf;
+	--l41: #02d;
+	--l42: #0cf;
+
+	--l31: #050;
+	--l32: #8f8;
 
 	--l21: #f80;
 	--l22: #ff0;
@@ -280,22 +283,19 @@ body {
 	left: 0;
 	pointer-events: auto;
 }
-.lvl4 {
+.lvl5 {
 	background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent !important;
-	-webkit-text-fill-color: transparent !important;
+}
+.lvl4 {
+	background: linear-gradient(to bottom, var(--l41) 20%, var(--l42));
 }
 .lvl3 {
 	background: linear-gradient(to bottom, var(--l31) 20%, var(--l32));
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent !important;
-	-webkit-text-fill-color: transparent !important;
 }
 .lvl2 {
 	background: linear-gradient(to bottom, var(--l21) 20%, var(--l22));
+}
+.lvl5, .lvl4, .lvl3, .lvl2 {
 	background-clip: text;
 	-webkit-background-clip: text;
 	color: transparent !important;
@@ -618,15 +618,15 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl4">Q</b>Chat <span class="version">v1.5.3</span></p>
+		<p class="logo"><b class="lvl5">Q</b>Chat <span class="version">v1.5.3</span></p>
 		<div class="right">
-			<p class="mod lvl3" hidden>MOD</p>
+			<p class="mod" hidden>MOD</p>
 			<p id="channel"></p>
 		</div>
 	</div>
 	<div id="menu-wrapper" data-active="0">
 		<div id="menu">
-			<p class="logo"><b class="lvl4">Q</b>Chat</p>
+			<p class="logo"><b class="lvl5">Q</b>Chat</p>
 
 			<div id="login-section">
 				<p>Enter display name:</p>
@@ -758,6 +758,7 @@ body {
 			e.value = safeText(e.value);
 		}
 
+		const modLabel = document.querySelector('#top .right .mod');
 		function fixMenuSections() {
 			if (!session.user) {
 				loginSection.hidden = false;
@@ -775,6 +776,7 @@ body {
 
 			const modHidden = !session.user || session.level < 3;
 			document.querySelectorAll('.mod').forEach(e => e.hidden = modHidden);
+			if (!modHidden) modLabel.classList = `mod lvl${Number(session.level) || 0}`;
 		}
 		
 		function loginUser(data) {

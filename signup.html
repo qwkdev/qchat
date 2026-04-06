@@ -12,8 +12,11 @@
 	--c: #30f;
 	--c2: #90f;
 
-	--l31: #02d;
-	--l32: #0cf;
+	--l41: #02d;
+	--l42: #0cf;
+
+	--l31: #050;
+	--l32: #8f8;
 
 	--l21: #f80;
 	--l22: #ff0;
@@ -157,28 +160,235 @@ body {
 #info p::selection {
 	background: var(--grey-s);
 }
-.lvl4 {
+
+
+
+
+
+#menu-wrapper {
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	left: -100vw;
+	width: 100vw;
+	height: 100vh;
+	z-index: 50;
+	display: grid;
+	grid-template-columns: auto calc(5 * var(--u));
+	transition: .5s;
+
+	#menu {
+		width: 100%;
+		height: 100%;
+		background: var(--bg);
+		box-shadow: 0 0 calc(5 * var(--u)) 0 var(--bg);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: calc(5 * var(--u));
+	
+		.logo {
+			font-size: calc(3 * var(--u));
+			margin-top: calc(5 * var(--u));
+			text-align: center;
+		}
+		div {
+			width: 100%;
+			height: max-content;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: calc(1 * var(--u));
+		}
+		div[hidden] {
+			display: none;
+		}
+		input[type="text"], input[type="password"], button {
+			width: 50%;
+			height: calc(5 * var(--u));
+			box-sizing: border-box;
+			font-family: monospace;
+			font-size: calc(2 * var(--u));
+		
+			&:focus {
+				outline: none;
+				border-color: var(--c);
+			}
+			&::selection {
+				background: var(--c);
+			}
+		}
+		input[type="text"], input[type="password"] {
+			background: var(--fg);
+			border: var(--border-width) solid var(--border);
+			border-radius: var(--br);
+			font-family: monospace;
+			font-size: calc(2 * var(--u));
+			padding-left: calc(1.25 * var(--u));
+			color: var(--text);
+		}
+		button {
+			background: var(--fg2);
+			border: var(--border-width) solid var(--border2);
+			border-radius: var(--br);
+			color: var(--text);
+		
+			&:hover {
+				background: var(--fg3);
+			}
+		}
+		h1, h2, p:not(.logo) {
+			width: 50%;
+			box-sizing: border-box;
+			font-family: monospace;
+			font-size: calc(2 * var(--u));
+			margin: 0;
+			text-align: center;
+			color: var(--text);
+
+			&::selection {
+				background: var(--text-s);
+			}
+		}
+		
+		p:not(.logo) {
+			font-size: calc(1.5 * var(--u));
+		}
+		#logout-section h2 {
+			margin: calc(1 * var(--u)) 0 calc(1.25 * var(--u)) 0;
+		}
+	}
+	#close-menu {
+		position: relative;
+		width: calc(5 * var(--u));
+		height: calc(5 * var(--u));
+		background: var(--bg);
+		border: none;
+
+		&:focus {
+			outline: none;
+		}
+		svg {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: calc(2.5 * var(--u));
+			height: calc(2.5 * var(--u));
+			stroke: var(--text);
+		}
+	}
+	&[data-active="1"] {
+		left: 0;
+		pointer-events: auto;
+	}
+}
+
+
+
+
+
+
+
+
+#main {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	width: calc(30 * var(--u));
+
+	display: flex;
+	flex-direction: column;
+	gap: calc(.5 * var(--u));
+
+	input[type="text"], input[type="password"], button {
+		width: 100%;
+		height: calc(5 * var(--u));
+		box-sizing: border-box;
+		font-family: monospace;
+		font-size: calc(2 * var(--u));
+	
+		&:focus {
+			outline: none;
+			border-color: var(--c);
+		}
+		&::selection {
+			background: var(--c);
+		}
+	}
+	input.invalid {
+		border-color: red !important;
+	}
+	input[type="text"], input[type="password"] {
+		background: var(--fg);
+		border: var(--border-width) solid var(--border);
+		border-radius: var(--br);
+		font-family: monospace;
+		font-size: calc(2 * var(--u));
+		padding-left: calc(1.25 * var(--u));
+		color: var(--text);
+	}
+	button {
+		background: var(--fg2);
+		border: var(--border-width) solid var(--border2);
+		border-radius: var(--br);
+		color: var(--text);
+	
+		&:hover {
+			background: var(--fg3);
+		}
+	}
+
+	h1, h2, p {
+		width: 100%;
+		box-sizing: border-box;
+		font-family: Arial;
+		margin: 0;
+		font-weight: 500;
+	}
+	h1, h2 {
+		color: var(--text);
+		&::selection {
+			background: var(--text-s);
+		}
+	}
+	h1 {
+		font-size: calc(3 * var(--u));
+		text-align: center;
+	}
+	h2 {
+		margin-top: calc(2 * var(--u));
+		font-size: calc(1.5 * var(--u));
+	}
+	p {
+		margin-bottom: calc(2 * var(--u));
+		font-size: calc(1.5 * var(--u));
+		color: var(--grey);
+		&::selection {
+			background: var(--grey-s);
+		}
+	}
+}
+.lvl5 {
 	background: linear-gradient(to bottom, var(--c) 20%, var(--c2));
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent !important;
-	-webkit-text-fill-color: transparent !important;
+}
+.lvl4 {
+	background: linear-gradient(to bottom, var(--l41) 20%, var(--l42));
 }
 .lvl3 {
 	background: linear-gradient(to bottom, var(--l31) 20%, var(--l32));
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent !important;
-	-webkit-text-fill-color: transparent !important;
 }
 .lvl2 {
 	background: linear-gradient(to bottom, var(--l21) 20%, var(--l22));
+}
+.lvl5, .lvl4, .lvl3, .lvl2 {
 	background-clip: text;
 	-webkit-background-clip: text;
 	color: transparent !important;
 	-webkit-text-fill-color: transparent !important;
 }
-
 #error {
 	position: absolute;
 	top: calc(5 * var(--u));
@@ -209,37 +419,12 @@ body {
 	bottom: 0;
 	left: 0;
 	width: 100vw;
-	height: calc(11 * var(--u));
+	height: calc(4 * var(--u));
 	background: var(--bg);
 }
 #top, #bottom {
 	z-index: 10;
 	box-shadow: 0 0 calc(1 * var(--u)) calc(.5 * var(--u)) var(--bg);
-}
-#msg-input {
-	position: absolute;
-	bottom: calc(4 * var(--u));
-	left: 50%;
-	transform: translateX(-50%);
-	width: calc(100vw - var(--chat-margin) * 2);
-	height: calc(7 * var(--u));
-	resize: none;
-	border-radius: calc(var(--br) * 2);
-	font-size: calc(2 * var(--u));
-	padding: calc(2.2 * var(--u)) calc(2 * var(--u));
-	box-sizing: border-box;
-	color: var(--text2);
-	background: var(--fg);
-	border: var(--border-width) solid var(--border);
-	transition: .4s;
-}
-#msg-input:focus {
-	outline: none;
-	border-color: var(--c);
-}
-#msg-input::selection {
-	background: var(--c);
-	color: var(--text);
 }
 .underlined {
 	color: var(--grey);
@@ -336,36 +521,33 @@ body {
 	}
 }
 @media only screen and (min-aspect-ratio: 1/1) {
-	#menu-wrapper {
-		left: -80vh;
-		grid-template-columns: calc(80vh - (5 * var(--u))) calc(5 * var(--u));
-	}
-}
-@media only screen and (min-width: 100vh) {
-	#search {
-		width: 80vw;
-	}
-	#results {
-		width: calc(80vw - (3.5 * var(--u)));
-	}
+
 }
 	</style>
 </head>
 <body>
 	<div id="top">
-		<button onclick="back(1)">
+		<button onclick="back()">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M6 12H18M6 12L11 7M6 12L11 17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl4">Q</b>Chat</p>
-		<div class="right">
-			<p id="channel">Sign Up</p>
-		</div>
+		<p class="logo"><b class="lvl5">Q</b>Chat</p>
 	</div>
 
-
-
-
-
+	<main id="main">
+		<h1>Sign Up</h1>
+		<h2>Username: (Min 3)</h2>
+		<input type="text" id="username" maxlength="16" oninput="formatUsername(this)">
+		<h2>Password: (Min 8)</h2>
+		<input type="password" id="password" maxlength="64" oninput="formatPassword(this)">
+		<h2>Email:</h2>
+		<input type="text" id="email" oninput="formatEmail(this)">
+		<p>
+			Please note only certain domains are allowed:<br>
+			- @glow.sch.uk<br>
+			- @gmail.com
+		</p>
+		<button onclick="submit()">Create Account</button>
+	</main>
 
 
 	<div id="error" hidden>
@@ -390,7 +572,73 @@ body {
 	</div>
 
 	<script>
+		const MIN_NAME_LENGTH = 3;
+		const MAX_NAME_LENGTH = 16;
+		const MIN_PASSWORD_LENGTH = 8;
+		const MAX_PASSWORD_LENGTH = 64;
 
+		const EMAIL_REGEX = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+		const ALLOWED_EMAIL_DOMAINS = [
+			'gmail.com', 'glow.sch.uk'
+		];
+
+		function safeText(text, l) {
+			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, l);
+		}
+
+		function formatUsername(ele) {
+			ele.classList = '';
+			ele.value = safeText(ele.value, MAX_NAME_LENGTH);
+		}
+		function formatPassword(ele) {
+			ele.classList = '';
+			ele.value = ele.value.slice(0, MAX_PASSWORD_LENGTH);
+		}
+		function formatEmail(ele) {
+			ele.classList = '';
+			if (ele.value && ele.value.split('@')?.[1] && (!EMAIL_REGEX.test(ele.value) || !ALLOWED_EMAIL_DOMAINS.includes(ele.value.split('@')[1]))) {
+				ele.classList = 'invalid';
+			}
+		}
+
+		const inputs = {
+			username: document.getElementById('username'),
+			password: document.getElementById('password'),
+			email: document.getElementById('email')
+		};
+		function submit() {
+			formatUsername(username);
+			if (
+				username.value.length < MIN_NAME_LENGTH ||
+				username.value.length > MAX_NAME_LENGTH
+			) {
+				username.classList = 'invalid';
+				return;
+			}
+			username.classList = '';
+
+			formatpassword(password);
+			if (
+				password.value.length < MIN_PASSWORD_LENGTH ||
+				password.value.length > MAX_PASSWORD_LENGTH
+			) {
+				password.classList = 'invalid';
+				return;
+			}
+			password.classList = '';
+
+			if (
+				ele.value &&
+				ele.value.split('@')?.[1] &&
+				(
+					!EMAIL_REGEX.test(ele.value) ||
+					!ALLOWED_EMAIL_DOMAINS.includes(ele.value.split('@')[1])
+				)) {
+				ele.classList = 'invalid';
+				return;
+			}
+			ele.classList = '';
+		}
 	</script>
 </body>
 </html>
