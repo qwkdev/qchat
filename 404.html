@@ -603,14 +603,6 @@ body {
 		grid-template-columns: calc(80vh - (5 * var(--u))) calc(5 * var(--u));
 	}
 }
-@media only screen and (min-width: 100vh) {
-	#search {
-		width: 80vw;
-	}
-	#results {
-		width: calc(80vw - (3.5 * var(--u)));
-	}
-}
 	</style>
 </head>
 <body>
@@ -1213,8 +1205,8 @@ body {
 		alertModal.addEventListener('click', e => {
 			if (e.target === alertModal) alertModal.close();
 		});
-		function showAlert(html='Alert', ok=true, cancel=false) {
-			alertEle.text.innerHTML = html;
+		function showAlert(text='Alert', ok=true, cancel=false) {
+			alertEle.text.innerText = text;
 			if (typeof ok === 'function') {
 				alertEle.ok.onclick = function() {
 					alertModal.close();

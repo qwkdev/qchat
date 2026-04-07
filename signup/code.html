@@ -301,14 +301,13 @@ body {
 
 	display: flex;
 	flex-direction: column;
+	align-items: center;
 	gap: calc(.5 * var(--u));
 
-	input[type="text"], input[type="password"], button {
-		width: 100%;
-		height: calc(5 * var(--u));
+	input[type="text"], button {
 		box-sizing: border-box;
 		font-family: monospace;
-		font-size: calc(2 * var(--u));
+		
 	
 		&:focus {
 			outline: none;
@@ -318,19 +317,30 @@ body {
 			background: var(--c);
 		}
 	}
-	input.invalid {
-		border-color: red !important;
+	#inputs {
+		display: flex;
+		width: max-content;
+		gap: calc(.5 * var(--u));
+		margin: calc(.5 * var(--u));
 	}
-	input[type="text"], input[type="password"] {
+	input[type="text"] {
+		font-size: calc(4 * var(--u));
+		width: calc(1ch + 2.6 * var(--u));
+		height: calc(7 * var(--u));
 		background: var(--fg);
 		border: var(--border-width) solid var(--border);
 		border-radius: var(--br);
 		font-family: monospace;
-		font-size: calc(2 * var(--u));
 		padding-left: calc(1.25 * var(--u));
 		color: var(--text);
 	}
+	input.invalid {
+		border-color: red !important;
+	}
 	button {
+		width: 100%;
+		height: calc(5 * var(--u));
+		font-size: calc(2 * var(--u));
 		background: var(--fg2);
 		border: var(--border-width) solid var(--border2);
 		border-radius: var(--br);
@@ -534,19 +544,18 @@ body {
 	</div>
 
 	<main id="main">
-		<h1>Sign Up</h1>
-		<h2>Username: (Min 3)</h2>
-		<input type="text" id="username" maxlength="16" oninput="formatUsername(this)">
-		<h2>Password: (Min 8)</h2>
-		<input type="password" id="password" maxlength="64" oninput="formatPassword(this)">
-		<h2>Email:</h2>
-		<input type="text" id="email" oninput="formatEmail(this)">
-		<p>
-			Please note only certain domains are allowed:<br>
-			- @glow.sch.uk<br>
-			- @gmail.com
-		</p>
-		<button onclick="submit()">Create Account</button>
+		<h1>Enter Code</h1>
+		<div id="inputs">
+			<input type="text" inputmode="decimal" id="code1">
+			<input type="text" inputmode="decimal" id="code2">
+			<input type="text" inputmode="decimal" id="code3">
+			<input type="text" inputmode="decimal" id="code4">
+			<input type="text" inputmode="decimal" id="code5">
+			<input type="text" inputmode="decimal" id="code6">
+		</div>
+		<p>Enter the code sent to your email, check your spam folder if you don't see it.</p>
+
+		<button onclick="submit()">Verify</button>
 	</main>
 
 
@@ -573,10 +582,15 @@ body {
 
 	<script>
 		const params = new URLSearchParams(window.location.search);
+		if (!params.get('t') || !params.get('u')) window.location.href = '/signup';
+
 		function back() {
+			window.location.href = '/signup' + (params.get('from') ? `?from=${params.get('from')}` : '');
+		}
+		function back2() {
 			window.location.href = '/' + (params.get('from') ?? '');
 		}
-
+ 
 		// const SERVER = 'https://qchat.pythonanywhere.com';
 		const SERVER = 'http://127.0.0.1:5000';
 
@@ -594,76 +608,50 @@ body {
 			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, l);
 		}
 
-		function formatUsername(ele) {
-			ele.classList = '';
-			ele.value = safeText(ele.value, MAX_NAME_LENGTH);
-		}
-		function formatPassword(ele) {
-			ele.classList = '';
-			ele.value = ele.value.slice(0, MAX_PASSWORD_LENGTH);
-		}
-		function formatEmail(ele) {
-			ele.classList = '';
-			if (ele.value && ele.value.split('@')?.[1] && (!EMAIL_REGEX.test(ele.value) || !ALLOWED_EMAIL_DOMAINS.includes(ele.value.split('@')[1]))) {
-				ele.classList = 'invalid';
+		
+		const inputs = Array.from({ length: 6 }, (_, i) => document.getElementById(`code${i+1}`));
+		inputs.forEach(e => e.value = '');
+		let state = 0;
+
+		document.addEventListener('keydown', event => {
+			if (inputs.some(e => event.target === e)) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				inputs.forEach(e => e.classList = '');
+				if (48 <= event.keyCode && event.keyCode <= 58) {
+					inputs[state].value = event.keyCode - 48;
+					state++;
+				} else if (event.keyCode === 8) {
+					inputs[state].value = '';
+					state--;
+				}
+				state = Math.min(Math.max(state, 0), 5);
+				inputs[state].focus();
 			}
-		}
-
-		const inputs = {
-			username: document.getElementById('username'),
-			password: document.getElementById('password'),
-			email: document.getElementById('email')
-		};
+		});
+		
 		async function submit() {
-			let exit = false;
+			if (inputs.some(e => !e.value || !parseInt(e.value))) {
+				inputs.forEach(e => e.classList = 'invalid');
+				return;
+			}
 
-			formatUsername(username);
-			if (
-				username.value.length < MIN_NAME_LENGTH ||
-				username.value.length > MAX_NAME_LENGTH
-			) {
-				username.classList = 'invalid';
-				exit = true;
-			} else username.classList = '';
-
-			formatPassword(password);
-			if (
-				password.value.length < MIN_PASSWORD_LENGTH ||
-				password.value.length > MAX_PASSWORD_LENGTH
-			) {
-				password.classList = 'invalid';
-				exit = true;
-			} else password.classList = '';
-
-			if (
-				!email.value ||
-				!email.value.split('@')?.[1] ||
-				(
-					!EMAIL_REGEX.test(email.value) ||
-					!ALLOWED_EMAIL_DOMAINS.includes(email.value.split('@')[1])
-				)) {
-				email.classList = 'invalid';
-				exit = true;
-			} else email.classList = '';
-
-			if (exit) return;
-
-			const resp = await fetch(`${SERVER}/signup`, {
+			const resp = await fetch(`${SERVER}/signup/verify`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					user: username.value,
-			 		password: password.value,
-					email: email.value
+					u: params.get('u'),
+					t: params.get('t'),
+					c: inputs.map(e => e.value).join('')
 				})
 			})
 				.then(resp => resp.json())
 				.then(data => {
-					if (data.success === true && data.user && data.token) {
-						window.location.href = `/signup/code?t=${data.token}&u=${data.user}` + (params.get('from') ? `&from=${params.get('from')}` : '');
-					} else showAlert(data.error);
+					if (data.success === true) showAlert('Account created!', ok=back2);
+					else showAlert(data.error, ok=(data.retry ? true : back));
 				})
 				.catch(e => showError('Network Error:', e));
 		}
