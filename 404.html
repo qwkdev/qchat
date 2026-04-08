@@ -626,7 +626,7 @@ body {
 				
 				<p>OR</p>
 
-				<input type="text" placeholder="Username" id="login-user" oninput="format(this)">
+				<input type="text" placeholder="Username" id="login-user">
 				<input type="password" placeholder="Password" id="login-password">
 				<button onclick="login()">Login</button>
 			</div>
@@ -705,7 +705,8 @@ body {
 		}
 
 		const CHANNEL = safeText(window.location.pathname.slice(1)) || 'main';
-		const SERVER = 'https://qchat.pythonanywhere.com';
+		// const SERVER = 'https://qchat.pythonanywhere.com';
+		const SERVER = 'http://127.0.0.1:5000';
 
 		let session = {
 			user: null,
@@ -785,8 +786,6 @@ body {
 		async function login() {
 			if (!menuEle.user.value || !menuEle.password.value) return;
 
-			format(menuEle.user);
-
 			await fetch(`${SERVER}/login`, {
 				method: 'POST',
 				credentials: 'include',
@@ -794,7 +793,7 @@ body {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					user: menuEle.user.value.startsWith('@') ? menuEle.user.value : '@' + menuEle.user.value,
+					user: menuEle.user.value.includes('@') ? menuEle.user.value : '@' + menuEle.user.value,
 					password: menuEle.password.value
 				})
 			})

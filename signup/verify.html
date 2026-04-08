@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>qChat</title>
+
+	<style>
+		body {
+			background: #000;
+		}
+		p {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+
+			margin: 0;
+			color: #fff;
+			text-align: center;
+			width: 80vw;
+			font-size: 3vh;
+			font-family: monospace;
+		}
+	</style>
+</head>
+<body>
+	<p>Loading...</p>
+
+	<script>
+		// const SERVER = 'https://qchat.pythonanywhere.com';
+		const SERVER = 'http://127.0.0.1:5000';
+		
+		const params = new URLSearchParams(window.location.search);
+		if (!params.get('t') || !params.get('u') || !params.get('c')) window.location.href = '/signup';
+		window.location.href = `${SERVER}/signup/verify?t=${params.get('t')}&u=${params.get('u')}&c=${params.get('c')}`;
+	</script>
+</body>
+</html>

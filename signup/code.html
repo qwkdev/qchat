@@ -585,10 +585,10 @@ body {
 		if (!params.get('t') || !params.get('u')) window.location.href = '/signup';
 
 		function back() {
-			window.location.href = '/signup' + (params.get('from') ? `?from=${params.get('from')}` : '');
+			setTimeout(() => {window.location.href = '/signup' + (params.get('from') ? `?from=${params.get('from')}` : '')}, 1000);
 		}
 		function back2() {
-			window.location.href = '/' + (params.get('from') ?? '');
+			setTimeout(() => {window.location.href = '/' + (params.get('from') ?? '')}, 1000);
 		}
  
 		// const SERVER = 'https://qchat.pythonanywhere.com';
@@ -607,14 +607,15 @@ body {
 		function safeText(text, l) {
 			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, l);
 		}
-
+		const isDigits = s => /^\d+$/.test(s);
 		
 		const inputs = Array.from({ length: 6 }, (_, i) => document.getElementById(`code${i+1}`));
 		inputs.forEach(e => e.value = '');
 		let state = 0;
 
+		let keysDown = new Set();
 		document.addEventListener('keydown', event => {
-			if (inputs.some(e => event.target === e)) {
+			if (!(event.ctrlKey || event.metaKey) && inputs.some(e => event.target === e)) {
 				event.preventDefault();
 				event.stopPropagation();
 
@@ -630,9 +631,19 @@ body {
 				inputs[state].focus();
 			}
 		});
+		document.addEventListener('paste', event => {
+			event.preventDefault();
+			const text = event.clipboardData.getData('text');
+			if (text.length === 6 && isDigits(text)) {
+				inputs.forEach((e, n) => e.value = Number(text[n]));
+				state = 5;
+				inputs[state].focus();
+			}
+		});
+		
 		
 		async function submit() {
-			if (inputs.some(e => !e.value || !parseInt(e.value))) {
+			if (inputs.some(e => !e.value || !Number.isInteger(Number(e.value)))) {
 				inputs.forEach(e => e.classList = 'invalid');
 				return;
 			}
@@ -650,8 +661,11 @@ body {
 			})
 				.then(resp => resp.json())
 				.then(data => {
-					if (data.success === true) showAlert('Account created!', ok=back2);
-					else showAlert(data.error, ok=(data.retry ? true : back));
+					if (data.success === true) {
+						showAlert('Account created!', ok=back2);
+					} else {
+						showAlert(data.error, ok=(data.retry ? true : back));
+					}
 				})
 				.catch(e => showError('Network Error:', e));
 		}
