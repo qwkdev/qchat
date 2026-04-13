@@ -301,13 +301,14 @@ body {
 
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	gap: calc(.5 * var(--u));
 
-	input[type="text"], button {
+	input[type="text"], input[type="password"], button {
+		width: 100%;
+		height: calc(5 * var(--u));
 		box-sizing: border-box;
 		font-family: monospace;
-		
+		font-size: calc(2 * var(--u));
 	
 		&:focus {
 			outline: none;
@@ -317,48 +318,36 @@ body {
 			background: var(--c);
 		}
 	}
-	#inputs {
-		display: flex;
-		width: max-content;
-		gap: calc(.5 * var(--u));
-		margin: calc(.5 * var(--u));
+	input.invalid {
+		border-color: red !important;
 	}
 	input[type="text"] {
-		font-size: calc(4 * var(--u));
-		width: calc(1ch + 2.6 * var(--u));
-		height: calc(7 * var(--u));
 		background: var(--fg);
 		border: var(--border-width) solid var(--border);
 		border-radius: var(--br);
 		font-family: monospace;
+		font-size: calc(2 * var(--u));
 		padding-left: calc(1.25 * var(--u));
 		color: var(--text);
 	}
-	input.invalid {
-		border-color: red !important;
-	}
 	button {
-		width: 100%;
-		height: calc(5 * var(--u));
-		font-size: calc(2 * var(--u));
 		background: var(--fg2);
 		border: var(--border-width) solid var(--border2);
 		border-radius: var(--br);
 		color: var(--text);
+		margin-top: calc(4 * var(--u));
 	
 		&:hover {
 			background: var(--fg3);
 		}
 	}
 
-	h1, h2, p {
+	h1, h2 {
 		width: 100%;
 		box-sizing: border-box;
 		font-family: Arial;
 		margin: 0;
 		font-weight: 500;
-	}
-	h1, h2 {
 		color: var(--text);
 		&::selection {
 			background: var(--text-s);
@@ -371,14 +360,6 @@ body {
 	h2 {
 		margin-top: calc(2 * var(--u));
 		font-size: calc(1.5 * var(--u));
-	}
-	p {
-		margin-bottom: calc(2 * var(--u));
-		font-size: calc(1.5 * var(--u));
-		color: var(--grey);
-		&::selection {
-			background: var(--grey-s);
-		}
 	}
 }
 .lvl5 {
@@ -544,18 +525,10 @@ body {
 	</div>
 
 	<main id="main">
-		<h1>Enter Code</h1>
-		<div id="inputs">
-			<input type="text" inputmode="decimal" id="code1">
-			<input type="text" inputmode="decimal" id="code2">
-			<input type="text" inputmode="decimal" id="code3">
-			<input type="text" inputmode="decimal" id="code4">
-			<input type="text" inputmode="decimal" id="code5">
-			<input type="text" inputmode="decimal" id="code6">
-		</div>
-		<p>Enter the code sent to your email, check your spam folder if you don't see it.</p>
-
-		<button onclick="submit()">Verify</button>
+		<h1>Forgot Password</h1>
+		<h2>Email:</h2>
+		<input type="text" id="user">
+		<button onclick="submit()">Send Reset Link</button>
 	</main>
 
 
@@ -584,89 +557,28 @@ body {
 		const params = new URLSearchParams(window.location.search);
 
 		function back() {
-			window.location.href = '/signup' + (params.get('from') ? `?from=${params.get('from')}` : '');
-		}
-		function back2() {
 			window.location.href = '/' + (params.get('from') ?? '');
 		}
 
-		if (!params.get('t') || !params.get('u')) back();
- 
 		// const SERVER = 'https://qchat.pythonanywhere.com';
 		const SERVER = 'http://127.0.0.1:5000';
 
-		const MIN_NAME_LENGTH = 3;
-		const MAX_NAME_LENGTH = 16;
-		const MIN_PASSWORD_LENGTH = 8;
-		const MAX_PASSWORD_LENGTH = 64;
 
-		const EMAIL_REGEX = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-		const ALLOWED_EMAIL_DOMAINS = [
-			'gmail.com', 'glow.sch.uk'
-		];
-
-		function safeText(text, l) {
-			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, l);
-		}
-		const isDigits = s => /^\d+$/.test(s);
-		
-		const inputs = Array.from({ length: 6 }, (_, i) => document.getElementById(`code${i+1}`));
-		inputs.forEach(e => e.value = '');
-		let state = 0;
-
-		let keysDown = new Set();
-		document.addEventListener('keydown', event => {
-			if (!(event.ctrlKey || event.metaKey) && inputs.some(e => event.target === e)) {
-				event.preventDefault();
-				event.stopPropagation();
-
-				inputs.forEach(e => e.classList = '');
-				if (48 <= event.keyCode && event.keyCode <= 58) {
-					inputs[state].value = event.keyCode - 48;
-					state++;
-				} else if (event.keyCode === 8) {
-					inputs[state].value = '';
-					state--;
-				}
-				state = Math.min(Math.max(state, 0), 5);
-				inputs[state].focus();
-			}
-		});
-		document.addEventListener('paste', event => {
-			event.preventDefault();
-			const text = event.clipboardData.getData('text');
-			if (text.length === 6 && isDigits(text)) {
-				inputs.forEach((e, n) => e.value = Number(text[n]));
-				state = 5;
-				inputs[state].focus();
-			}
-		});
-		
-		
+		const input = document.getElementById('user');
 		async function submit() {
-			if (inputs.some(e => !e.value || !Number.isInteger(Number(e.value)))) {
-				inputs.forEach(e => e.classList = 'invalid');
-				return;
-			}
-
-			const resp = await fetch(`${SERVER}/signup/verify`, {
+			const resp = await fetch(`${SERVER}/account/resetpassword`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					u: params.get('u'),
-					t: params.get('t'),
-					c: inputs.map(e => e.value).join('')
+					email: input.value
 				})
 			})
 				.then(resp => resp.json())
 				.then(data => {
-					if (data.success === true) {
-						showAlert('Account created!', ok=back2);
-					} else {
-						showAlert(data.error, ok=(data.retry ? true : back));
-					}
+					if (data.success === true) showAlert('Sent!', ok=back);
+					else showAlert(data.error, ok=back);
 				})
 				.catch(e => showError('Network Error:', e));
 		}

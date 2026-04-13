@@ -321,7 +321,7 @@ body {
 	input.invalid {
 		border-color: red !important;
 	}
-	input[type="text"], input[type="password"] {
+	input[type="password"] {
 		background: var(--fg);
 		border: var(--border-width) solid var(--border);
 		border-radius: var(--br);
@@ -335,20 +335,19 @@ body {
 		border: var(--border-width) solid var(--border2);
 		border-radius: var(--br);
 		color: var(--text);
+		margin-top: calc(4 * var(--u));
 	
 		&:hover {
 			background: var(--fg3);
 		}
 	}
 
-	h1, h2, p {
+	h1, h2 {
 		width: 100%;
 		box-sizing: border-box;
 		font-family: Arial;
 		margin: 0;
 		font-weight: 500;
-	}
-	h1, h2 {
 		color: var(--text);
 		&::selection {
 			background: var(--text-s);
@@ -361,14 +360,6 @@ body {
 	h2 {
 		margin-top: calc(2 * var(--u));
 		font-size: calc(1.5 * var(--u));
-	}
-	p {
-		margin-bottom: calc(2 * var(--u));
-		font-size: calc(1.5 * var(--u));
-		color: var(--grey);
-		&::selection {
-			background: var(--grey-s);
-		}
 	}
 }
 .lvl5 {
@@ -534,19 +525,12 @@ body {
 	</div>
 
 	<main id="main">
-		<h1>Sign Up</h1>
-		<h2>Username: (Min 3)</h2>
-		<input type="text" id="username" maxlength="16" oninput="formatUsername(this)">
-		<h2>Password: (Min 8)</h2>
+		<h1>Reset Password</h1>
+		<h2>New Password: (Min 8)</h2>
 		<input type="password" id="password" maxlength="64" oninput="formatPassword(this)">
-		<h2>Email:</h2>
-		<input type="text" id="email" oninput="formatEmail(this)">
-		<p>
-			Please note only certain domains are allowed:<br>
-			- @glow.sch.uk<br>
-			- @gmail.com
-		</p>
-		<button onclick="submit()">Create Account</button>
+		<h2>Confirm Password:</h2>
+		<input type="password" id="password2" maxlength="64" oninput="formatPassword(this)">
+		<button onclick="submit()">Change Password</button>
 	</main>
 
 
@@ -573,58 +557,33 @@ body {
 
 	<script>
 		const params = new URLSearchParams(window.location.search);
+
 		function back() {
+			window.location.href = '/account/password/forgot' + (params.get('from') ? `?from=${params.get('from')}` : '');
+		}
+		function back2() {
 			window.location.href = '/' + (params.get('from') ?? '');
 		}
+
+		if (!params.get('t') || !params.get('u')) back();
 
 		// const SERVER = 'https://qchat.pythonanywhere.com';
 		const SERVER = 'http://127.0.0.1:5000';
 
-		const MIN_NAME_LENGTH = 3;
-		const MAX_NAME_LENGTH = 16;
 		const MIN_PASSWORD_LENGTH = 8;
 		const MAX_PASSWORD_LENGTH = 64;
 
-		const EMAIL_REGEX = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-		const ALLOWED_EMAIL_DOMAINS = [
-			'gmail.com', 'glow.sch.uk'
-		];
-
-		function safeText(text, l) {
-			return text.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, l);
-		}
-
-		function formatUsername(ele) {
-			ele.classList = '';
-			ele.value = safeText(ele.value, MAX_NAME_LENGTH);
-		}
 		function formatPassword(ele) {
 			ele.classList = '';
 			ele.value = ele.value.slice(0, MAX_PASSWORD_LENGTH);
 		}
-		function formatEmail(ele) {
-			ele.classList = '';
-			if (ele.value && ele.value.split('@')?.[1] && (!EMAIL_REGEX.test(ele.value) || !ALLOWED_EMAIL_DOMAINS.includes(ele.value.split('@')[1]))) {
-				ele.classList = 'invalid';
-			}
-		}
 
 		const inputs = {
-			username: document.getElementById('username'),
 			password: document.getElementById('password'),
-			email: document.getElementById('email')
+			password2: document.getElementById('password2'),
 		};
 		async function submit() {
 			let exit = false;
-
-			formatUsername(username);
-			if (
-				username.value.length < MIN_NAME_LENGTH ||
-				username.value.length > MAX_NAME_LENGTH
-			) {
-				username.classList = 'invalid';
-				exit = true;
-			} else username.classList = '';
 
 			formatPassword(password);
 			if (
@@ -635,35 +594,28 @@ body {
 				exit = true;
 			} else password.classList = '';
 
-			if (
-				!email.value ||
-				!email.value.split('@')?.[1] ||
-				(
-					!EMAIL_REGEX.test(email.value) ||
-					!ALLOWED_EMAIL_DOMAINS.includes(email.value.split('@')[1])
-				)) {
-				email.classList = 'invalid';
+			if (password.value !== password2.value) {
+				password2.classList = 'invalid';
 				exit = true;
-			} else email.classList = '';
+			} else password2.classList = '';
 
 			if (exit) return;
 
-			const resp = await fetch(`${SERVER}/signup`, {
+			const resp = await fetch(`${SERVER}/account/password`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					user: username.value,
-			 		password: password.value,
-					email: email.value
+					user: params.get('u'),
+					token: params.get('t'),
+			 		new: password.value
 				})
 			})
 				.then(resp => resp.json())
 				.then(data => {
-					if (data.success === true && data.user && data.token) {
-						window.location.href = `/signup/code?t=${data.token}&u=${data.user}` + (params.get('from') ? `&from=${params.get('from')}` : '');
-					} else showAlert(data.error);
+					if (data.success === true) showAlert('Password reset!', ok=back2);
+					else showAlert(data.error, ok=back);
 				})
 				.catch(e => showError('Network Error:', e));
 		}
