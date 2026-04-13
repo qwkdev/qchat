@@ -28,8 +28,8 @@
 	<p>Loading...</p>
 
 	<script>
-		// const SERVER = 'https://qchat.pythonanywhere.com';
-		const SERVER = 'http://127.0.0.1:5000';
+		const SERVER = 'https://qchat.pythonanywhere.com';
+		// const SERVER = 'http://127.0.0.1:5000';
 		
 		const params = new URLSearchParams(window.location.search);
 		if (!params.get('t') || !params.get('u') || !params.get('c')) window.location.href = '/signup';
