@@ -481,7 +481,7 @@ body {
 
 		function formatUsername(ele) {
 			ele.classList = '';
-			ele.value = safeText(ele.value, MAX_NAME_LENGTH);
+			ele.value = safeText(ele.value, MAX_NAME_LENGTH).toLowerCase();
 		}
 		function formatPassword(ele) {
 			ele.classList = '';
