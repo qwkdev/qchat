@@ -676,7 +676,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl5">Q</b>Chat <span class="version">v1.7.0</span></p>
+		<p class="logo"><b class="lvl5">Q</b>Chat <span class="version">v1.7.1</span></p>
 		<div class="right">
 			<p class="mod" hidden></p>
 			<p id="channel"></p>
@@ -687,10 +687,10 @@ body {
 			<p class="logo"><b class="lvl5">Q</b>Chat</p>
 
 			<div id="login-section">
-				<p>Enter display name:</p>
+				<!-- <p>Enter display name:</p>
 				<input type="text" placeholder="Name" id="login-display" oninput="format(this)">
 				
-				<p>OR</p>
+				<p>OR</p> -->
 
 				<input type="text" placeholder="Username" id="login-user">
 				<input type="password" placeholder="Password" id="login-password">
@@ -801,7 +801,7 @@ body {
 
 		const loginSection = document.getElementById('login-section');
 		const menuEle = {
-			display: document.getElementById('login-display'),
+			// display: document.getElementById('login-display'),
 			user: document.getElementById('login-user'),
 			password: document.getElementById('login-password'),
 			loggedin: document.getElementById('logged-in')
@@ -978,12 +978,12 @@ body {
 			// }
 		}
 		function getUser(force=false) {
-			const resp = session.user ? parseUser(session.user, session.level) : (menuEle.display.value || '')
+			const resp = session.user ? parseUser(session.user, session.level) : false
 
 			if (force && !resp) {
 				burger(1);
-				menuEle.display.focus();
-				showAlert('Please enter a display name to chat');
+				menuEle.user.focus();
+				showAlert('Please login to chat');
 			} else return resp;
 		}
 
