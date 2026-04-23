@@ -712,7 +712,7 @@ body {
 				<p>Mod tools:</p>
 				<button onclick="modNuke()">Nuke Channel</button>
 				<button onclick="modClearTimeouts()">Clear Timeouts</button>
-				<button class="mod2" href="https://admin.qchat.lol" target="_blank" hidden>Admin Panel</button>
+				<button class="mod2" onclick="adminPanel()" hidden>Admin Panel</button>
 			</div>
 			<div id="settings-section">
 				<p>Settings:</p>
@@ -999,6 +999,9 @@ body {
 
 		/////
 
+		function adminPanel() {
+			window.open('https://admin.qchat.lol', '_blank').focus();
+		}
 		function modBan(btn) {
 			const msg = parseInt(btn.parentElement.parentElement.parentElement.id);
 			if (Number.isNaN(msg)) return;
