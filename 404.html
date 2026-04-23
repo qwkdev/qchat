@@ -238,6 +238,7 @@ body {
 	border: var(--border-width) solid var(--border2);
 	border-radius: var(--br);
 	color: var(--text);
+	text-decoration: none;
 }
 #menu-wrapper #menu button:hover {
 	background: var(--fg3);
@@ -711,6 +712,7 @@ body {
 				<p>Mod tools:</p>
 				<button onclick="modNuke()">Nuke Channel</button>
 				<button onclick="modClearTimeouts()">Clear Timeouts</button>
+				<button class="mod2" href="https://admin.qchat.lol" target="_blank" hidden>Admin Panel</button>
 			</div>
 			<div id="settings-section">
 				<p>Settings:</p>
@@ -1002,7 +1004,7 @@ body {
 			if (Number.isNaN(msg)) return;
 
 			showAlert(`Confirm BAN`, () => {
-				sendRequest(`/mod/ban/${CHANNEL}`, { msg }, () => showAlert('Banned'));
+				sendRequest(`/admin/ban/${CHANNEL}`, { msg }, () => showAlert('Banned'));
 			}, true);
 		}
 		function modTimeout(btn, ip) {
@@ -1534,6 +1536,12 @@ body {
 				if (e.data.sync) startSync();
 				else stopSync();
 			}
+
+			// e.source.postMessage({
+			// 	type: 'confirmation',
+			// 	success: true,
+			// 	sync: syncInterval ? true : false
+			// }, '*');
 		});
 	</script>
 </body>
