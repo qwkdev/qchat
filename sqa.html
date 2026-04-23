@@ -677,7 +677,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl5">Q</b>Chat <span class="version">v1.7.2</span></p>
+		<p class="logo"><b class="lvl5">Q</b>Chat <span class="version">v1.7.3</span></p>
 		<div class="right">
 			<p class="mod" hidden></p>
 			<p id="channel"></p>
@@ -717,6 +717,8 @@ body {
 			<div id="settings-section">
 				<p>Settings:</p>
 				<button id="notif-toggle" onclick="toggleNotifications()">Notifications: Off</button>
+				<button class="mod" onclick="go('mods')" hidden>Mod Channel</button>
+				<button id="back" onclick="back()" hidden>Go Back</button>
 			</div>
 		</div>
 		<button id="close-menu" onclick="burger(0)">
@@ -813,6 +815,18 @@ body {
 		function format(e) {
 			e.value = safeText(e.value);
 		}
+
+		function go(path='') {
+			window.location.href = '/' + (path ?? '') + `?from=${CHANNEL}`;
+		}
+
+		const params = new URLSearchParams(window.location.search);
+		function back() {
+			go(params.get('from'));
+		}
+		
+		const backButton = document.getElementById('back');
+		backButton.hidden = !params.get('from');
 
 		const modLabel = document.querySelector('#top .right .mod');
 		function fixMenuSections() {
@@ -1000,7 +1014,7 @@ body {
 		/////
 
 		function adminPanel() {
-			window.open('https://admin.qchat.lol', '_blank').focus();
+			window.open('https://qchat.lol/admin', '_blank').focus();
 		}
 		function modBan(btn) {
 			const msg = parseInt(btn.parentElement.parentElement.parentElement.id);

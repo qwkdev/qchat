@@ -1,8 +1,6 @@
 __pycache__/
 venv/
 .vscode/
-admin/
-dev/
 old/
 *.json
 *.py
