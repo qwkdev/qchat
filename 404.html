@@ -820,7 +820,7 @@ body {
 		}
 
 		function go(path='') {
-			window.location.href = '/' + (path ?? '') + `?from=${CHANNEL}`;
+			window.location.href = '/' + (path ?? '') + `?from=${params.get('from') && path === CHANNEL ? params.get('from') : CHANNEL}`;
 		}
 
 		const params = new URLSearchParams(window.location.search);
