@@ -533,6 +533,23 @@ body {
 
 			if (exit) return;
 
+			try {
+				const profanityRes = await fetch('https://vector.profanity.dev', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ message: username.value }),
+				});
+				const profanityData = await profanityRes.json();
+				
+				if (profanityData.isProfanity) {
+					username.classList = 'invalid';
+					showAlert('Username contains inappropriate language.');
+					return;
+				}
+			} catch (e) {
+				console.warn("Profanity API failed, allowing signup to proceed", e);
+			}
+
 			const resp = await fetch(`${SERVER}/signup`, {
 				method: 'POST',
 				headers: {
