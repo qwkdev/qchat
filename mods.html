@@ -1489,17 +1489,17 @@ body {
 			addPending(msg, session.level, user);
 			if (session.level < 3) {
 				try {
-					await fetch('https://vector.profanity.dev', {
+					const data = await fetch('https://vector.profanity.dev', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({ message: msg+' ' }),
-					}).then(r => r.json()).then(data => {
-						if (data.isProfanity) {
-							showAlert('Message was blocked for profanity');
-							removePending();
-							return; 
-						}
-					})
+					}).then(r => r.json());
+
+					if (data.isProfanity) {
+						showAlert('Message was blocked for profanity');
+						removePending();
+						return;
+					}
 				} catch (e) {
 					console.warn("Profanity API failed, allowing message to proceed", e);
 				}
