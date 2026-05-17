@@ -680,7 +680,7 @@ body {
 		<button onclick="burger(1)">
 			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g><path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
 		</button>
-		<p class="logo"><b class="lvl5">Q</b>Chat <span class="version">v1.7.4</span></p>
+		<p class="logo"><b class="lvl5">Q</b>Chat <span class="version">v1.7.5</span></p>
 		<div class="right">
 			<p class="mod" hidden></p>
 			<p id="channel"></p>
@@ -1385,7 +1385,7 @@ body {
 				if (e.shiftKey) return;
 				else {
 					e.preventDefault();
-					addPending(msgInput.value, session.level, getUser(true));
+					
 					send(msgInput.value);
 					msgInput.value = '';
 				}
@@ -1486,21 +1486,23 @@ body {
 		async function send(msg) {
 			const user = getUser(true);
 
-			try {
-				const res = await fetch('https://vector.profanity.dev', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ message: msg }),
-				});
-				const data = await res.json();
-				
-				if (data.isProfanity) {
-					removePending(); 
-					showError('Profanity Filter:', 'Your message was blocked for profanity.');
-					return; 
+			addPending(msg, session.level, user);
+			if (session.level < 3) {
+				try {
+					await fetch('https://vector.profanity.dev', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ message: msg }),
+					}).then(r => r.json()).then(data => {
+						if (data.isProfanity) {
+							showAlert('Message was blocked for profanity');
+							removePending();
+							return; 
+						}
+					})
+				} catch (e) {
+					console.warn("Profanity API failed, allowing message to proceed", e);
 				}
-			} catch (e) {
-				console.warn("Profanity API failed, allowing message to proceed", e);
 			}
 
 			await fetch(`${SERVER}/msg/${CHANNEL}`, {
