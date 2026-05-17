@@ -1492,7 +1492,7 @@ body {
 					await fetch('https://vector.profanity.dev', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ message: msg }),
+						body: JSON.stringify({ message: msg+' ' }),
 					}).then(r => r.json()).then(data => {
 						if (data.isProfanity) {
 							showAlert('Message was blocked for profanity');
