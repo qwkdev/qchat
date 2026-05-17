@@ -1485,6 +1485,24 @@ body {
 
 		async function send(msg) {
 			const user = getUser(true);
+
+			try {
+				const res = await fetch('https://vector.profanity.dev', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ message: msg }),
+				});
+				const data = await res.json();
+				
+				if (data.isProfanity) {
+					removePending(); 
+					showError('Profanity Filter:', 'Your message was blocked for profanity.');
+					return; 
+				}
+			} catch (e) {
+				console.warn("Profanity API failed, allowing message to proceed", e);
+			}
+
 			await fetch(`${SERVER}/msg/${CHANNEL}`, {
 				method: 'POST',
 				// credentials: 'include',
